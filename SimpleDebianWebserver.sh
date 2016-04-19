@@ -1,4 +1,4 @@
-b#!/bin/bash
+#!/bin/bash
 #
 # Script by Sebas Veeke
 # License: GNU General Public License version 3 (GPLv3)
