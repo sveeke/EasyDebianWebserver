@@ -4,20 +4,36 @@
 # License: GNU General Public License version 3 (GPLv3)
 #
 # Contact:
-# > e-mail: mail@sebasveeke.nl
-# > GitHub: sveeke
+# > e-mail      mail@sebasveeke.nl
+# > GitHub      sveeke
 
-## User input
-HOSTNAME=localhost                      # Hostname of the machine
-FQDN=localhost                          # Fully Qualified Domain Name
 
-USER1=user22                            # Username of the first user
-USER2=user23                            # Username of the second user
 
-SSH1="ssh 1234567890"                   # SSH public key for user 1
-SSH2="ssh 1234567890"                   # SSH public key for user 2
+### USER CONFIGURATION ###
 
-MYSQL=tijdelijk12345                    # Password for the mysql database
+# NETWORK STUFF
+HOSTNAME=localhost                      # Hostname of the machine (for example 'webserver.sebasveeke.nl')
+FQDN="localhost"                        # Fully Qualified Domain Name (for example 'webserver.sebasveeke.nl ')
+
+# FIRST USERNAME AND PUBLIC SSH KEY
+USER1=username1
+SSH1="ssh 1234567890"
+
+# SECOND USERNAME AND PUBLIC SSH KEY
+USER2=username2
+SSH2="ssh 1234567890"
+
+# MYSQL ROOT PASSWORD
+MYSQL=password
+
+
+
+
+
+
+
+
+###############################################################################################
 
 ## Colours & markup
 
@@ -111,7 +127,26 @@ echo -e "\t\t\t\t\t${white}[${green}OK${white}]${nc}"
 
 # Checking internet connection
 echo -e -n "${white}Connected to the internet...${nc}"
-echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+wget -q --tries=10 --timeout=20 --spider www.google.com
+if [[ $? -eq 0 ]]; then
+        echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+else
+        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
+        echo
+echo -e "${white}____________________________________________________________________________________
+
+Hi,
+
+This script needs a functioning internet connection.
+
+Please connect to the internet first.
+
+Good Luck!
+
+____________________________________________________________________________________${nc}"
+        echo
+        exit
+fi
 
 sleep 1
 
@@ -276,7 +311,7 @@ echo -e -n "${white}Configuring firewall for https traffic...${nc}"
 echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Activating firewall...${nc}"
-        ufw enable &> /dev/null
+#        ufw enable &> /dev/null
 echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
