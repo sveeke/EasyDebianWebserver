@@ -11,12 +11,13 @@
 HOSTNAME=localhost                      # Hostname of the machine
 FQDN=localhost                          # Fully Qualified Domain Name
 
-USER1=username1                         # Username of the first user
-USER2=username2                         # Username of the second user
+USER1=user22                            # Username of the first user
+USER2=user23                            # Username of the second user
 
-MYSQLPW=tijdelijk12345                  # Password for the mysql database
+SSH1="ssh 1234567890"                   # SSH public key for user 1
+SSH2="ssh 1234567890"                   # SSH public key for user 2
 
-
+MYSQL=tijdelijk12345                    # Password for the mysql database
 
 ## Colours & markup
 
@@ -30,7 +31,11 @@ blue='\033[1;36m'       # Blue
 white='\033[1;37m'      # White
 nc='\033[0m'            # No color
 
+
+
 ## Variables
+DEFAULTPASS=tijdelijk12345
+
 
 
 ## Beginning script execution
@@ -44,16 +49,15 @@ echo -e "Created by Sebas Veeke"
 echo -e "Licensed under the GNU Public License version 3"
 echo -e "***********************************************"
 echo
-echo -e "Starting install script now..."
-echo
-echo
+echo -e "Starting install script in 5 seconds. Press ctrl + c to abort."
+sleep 5
 
 
 
 ## Requirements
+echo
+echo
 echo -e "${blue}CHECKING REQUIREMENTS"
-
-
 
 # Check if script runs as root
 echo -e -n "${white}Script is running as root..."
@@ -109,57 +113,7 @@ echo -e "\t\t\t\t\t${white}[${green}OK${white}]${nc}"
 echo -e -n "${white}Connected to the internet...${nc}"
 echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
-
-
-## Network stuff
-echo
-echo
-echo -e "${blue}NETWORK SETTINGS"
-echo -e -n "${white}Changing hostname...${nc}"
-        echo "$hostname" > /home/script/hostname
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Changing FQDN...${nc}"
-        echo "$FQDN" > /home/script/fqdn
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
-
-
-## Accounts & SSH
-echo
-echo
-echo -e "${blue}USER ACCOUNTS AND SSH"
-echo -e -n "${white}Creating account $USER1...${nc}"
-        useradd $USER1 -s /bin/bash -m -p '$1$yvcdUC8L$ARfnP8AA4Cqy7DbJfJ4YX0'
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Creating SSH-folder for $USER1...${nc}"
-        mkdir /home/$USER1/.ssh
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Adding public key for $USER1...${nc}"
-        echo "ssh 1234567890" > /home/$USER1/.ssh/authorized_keys
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Creating account $USER2...${nc}"
-        useradd $USER2 -s /bin/bash -m -p '$1$yvcdUC8L$ARfnP8AA4Cqy7DbJfJ4YX0'
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Creating SSH-folder for $USER2...${nc}"
-        mkdir /home/$USER2/.ssh
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Adding public key for $USER2 $account1...${nc}"
-        echo "ssh 1234567890" > /home/$USER2/.ssh/authorized_keys
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Setting folder and file permissions...${nc}"
-        chown -R $USER1:$USER1 /home/$USER1/*
-        chmod 700 /home/$USER1/.ssh
-        chmod 600 /home/$USER1/.ssh/*
-        chown -R $USER2:$USER2 /home/$USER2/*
-        chmod 700 /home/$USER2/.ssh
-        chmod 600 /home/$USER2/.ssh/*
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e "${white}_____________________________________________________________"
-echo
-echo -e "${white}*** The default passwords '${lred}tijdelijk12345${white}' are being used ***"
-echo -e "${white}_____________________________________________________________"
-
-
+sleep 1
 
 ## Replace mirrors in sources.list
 echo
@@ -179,71 +133,197 @@ deb-src http://security.debian.org/ jessie/updates main contrib non-free" > /hom
 
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-
+sleep 1
 
 ## Updating OS to the latest version
 echo
 echo
 echo -e "${blue}UPDATING OPERATING SYSTEM"
 echo -e -n "${white}Downloading package list from repositories... ${nc}"
-#apt-get update &>/dev/null
+#       apt-get update &>/dev/null
 echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
 echo -e -n "${white}Downloading and installing new packages...${nc}"
-#apt-get -y upgrade &>/dev/null
+        apt-get -y upgrade &>/dev/null
 echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
 
+sleep 1
 
+## Network stuff
+echo
+echo
+echo -e "${blue}NETWORK SETTINGS"
+echo -e -n "${white}Changing hostname...${nc}"
+        echo "$hostname" > /home/script/hostname
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e -n "${white}Changing FQDN...${nc}"
+        echo "$FQDN" > /home/script/fqdn
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+sleep 1
+
+## Accounts & SSH
+echo
+echo
+
+HASH=$(openssl passwd -1 -salt temp $DEFAULTPASS)
+
+echo -e "${blue}USER ACCOUNTS AND SSH"
+
+echo -e -n "${white}Creating account $USER1...${nc}"
+        useradd $USER1 -s /bin/bash -m -p $HASH &> /dev/null
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Creating SSH-folder for $USER1...${nc}"
+        mkdir /home/$USER1/.ssh &> /dev/null
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Adding public key for $USER1...${nc}"
+        echo "SSH1" > /home/$USER1/.ssh/authorized_keys
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Creating account $USER2...${nc}"
+        useradd $USER2 -s /bin/bash -m -p $HASH &> /dev/null
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Creating SSH-folder for $USER2...${nc}"
+        mkdir /home/$USER2/.ssh &> /dev/null
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Adding public key for $USER2...${nc}"
+        echo "$SSH2" > /home/$USER2/.ssh/authorized_keys
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Setting folder and file permissions...${nc}"
+        chown $USER1:$USER1 /home/$USER1/.ssh &> /dev/null
+        chown $USER1:$USER1 /home/$USER1/.ssh/authorized_keys &> /dev/null
+        chmod 700 /home/$USER1/.ssh &> /dev/null
+        chmod 600 /home/$USER1/.ssh/authorized_keys &> /dev/null
+        chown $USER2:$USER2 /home/$USER2/.ssh &> /dev/null
+        chown $USER2:$USER2 /home/$USER2/.ssh/authorized_keys &> /dev/null
+        chmod 700 /home/$USER2/.ssh &> /dev/null
+        chmod 600 /home/$USER2/.ssh/authorized_keys &> /dev/null
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}___________________________________________________________"
+echo
+echo -e "${white}*** The default password '${lred}$DEFAULTPASS${white}' is being used ***"
+echo -e "${white}___________________________________________________________"
+
+sleep 4
 
 ## Installing new software
 echo
 echo
-echo -e "${blue}INSTALLING NEW SOFTWARE"
-echo -e -n "${white}Installing zip...${nc}"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Installing unzip...${nc}"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Installing sudo...${nc}"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Installing curl...${nc}"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${blue}INSTALLING SOFTWARE"
 echo -e -n "${white}Installing ufw...${nc}"
+        apt-get -y install ufw &> /dev/null
 echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Installing sudo...${nc}"
+#       apt-get -y install sudo &> /dev/null
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Installing zip...${nc}"
+        apt-get -y install zip &> /dev/null
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Installing unzip...${nc}"
+        apt-get -y install unzip &> /dev/null
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Installing curl...${nc}"
+        apt-get -y install curl &> /dev/null
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Installing mariadb-server...${nc}"
+        export DEBIAN_FRONTEND="noninteractive"
+        debconf-set-selections <<< "mariadb-server mysql-server/root_password password $MYSQL"
+        debconf-set-selections <<< "mariadb-server mysql-server/root_password_again password $MYSQL"
+        apt-get -y install mariadb-server &> /dev/null
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Installing mariadb-client...${nc}"
+        apt-get -y install mariadb-client &> /dev/null
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Installing apache2...${nc}"
+        apt-get -y install apache2 &> /dev/null
 echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Installing php5...${nc}"
+        apt-get -y install php5 &> /dev/null
 echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Installing libapache2-mod-php5...${nc}"
+        apt-get -y install libapache2-mod-php5 &> /dev/null
 echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-
-
-## Configuring webserver
-echo
-echo
-echo -e "${blue}CONFIGURING WEBSERVER"
-echo -e -n "${white}Restarting webserver...${nc}"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Activating module mod_rewrite...${nc}"
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-echo -e -n "${white}Modifying apache2.conf for wordpress...${nc}"
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
-
-
+sleep 3
 
 ## Configuring firewall
 echo
 echo
 echo -e "${blue}CONFIGURING FIREWALL"
 echo -e -n "${white}Configuring firewall for ssh traffic...${nc}"
+        ufw allow ssh &> /dev/null
 echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Configuring firewall for http traffic...${nc}"
+        ufw allow http &> /dev/null
 echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Configuring firewall for https traffic...${nc}"
+        ufw allow https &> /dev/null
 echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
+
 echo -e -n "${white}Activating firewall...${nc}"
+        ufw enable &> /dev/null
 echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+sleep 1
+
+## Configuring sudo
+echo
+echo
+echo -e "${blue}CONFIGURING SUDO"
+echo -e -n "${white}Adding $USER1 to the sudoers file...${nc}"
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Adding $USER2 to the sudoers file...${nc}"
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+sleep 1
+
+## Configuring webserver
+echo
+echo
+echo -e "${blue}CONFIGURING WEBSERVER"
+echo -e -n "${white}Creating folders...${nc}"
+        mkdir /var/www/html/web &> /dev/null
+        mkdir /var/www/html/tools &> /dev/null
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Setting folder ownership...${nc}"
+        chown www-data:www-data /var/www/html/web &> /dev/null
+        chown www-data:www-data /var/www/html/tools &> /dev/null
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Activating apache2 modules...${nc}"
+        a2enmod rewrite &> /dev/null
+        a2enmod actions &> /dev/null
+        a2enmod ssl &> /dev/null
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Modifying apache2.conf for wordpress...${nc}"
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Restarting webserver...${nc}"
+        service apache2 restart &> /dev/null
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+sleep 1
+
+# Backup
+
+# Set rights
+
+# Restart apache
