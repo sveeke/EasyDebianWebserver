@@ -8,6 +8,7 @@ TO DO
 - Change sources.list first, then update/upgrade and then configure firewall before anything else.
 - Edit apache2.conf for wordpress
 - Functions for configure webserver
+-   sudo a2enmod rewrite actions ssl
 - Backup ?
 - MySQL-password within script, without user interaction
 - Network connectivity check
