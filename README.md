@@ -9,3 +9,5 @@ TO DO
 - Edit apache2.conf for wordpress
 - Functions for configure webserver
 - Backup ?
+- MySQL-password within script, without user interaction
+- Network connectivity check
