@@ -8,7 +8,7 @@ Please note that this script is made for my specific use case and that it probab
 # What does the script do?
 
 
-
+Color code green: 139049
 
 
 
