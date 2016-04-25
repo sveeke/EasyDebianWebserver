@@ -11,15 +11,13 @@ Please note that this script is made for my specific use case and that it probab
 # What does the script do?
 
 
-Color code green: 139049
-
-
-
-SimpleDebianWebserver enables 
-
-
 TO DO
 
 - Edit SSHD_Config
 - Edit apache2.conf for wordpress
+- Edit sudoers
 - Backup ?
+- unattendedupgrades
+- apt-listchanges
+- needrestart
+
