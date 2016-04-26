@@ -20,4 +20,7 @@ TO DO
 - unattendedupgrades
 - apt-listchanges
 - needrestart
+- Test on clean installation
+- Prerequisite
+- What does the script do?
 
