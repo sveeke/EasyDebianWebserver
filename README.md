@@ -31,10 +31,12 @@ Please note that this script is made for my use case and that it probably won't 
    ```unzip master.zip```
 5. Give proper permissions to the script.  
    ```chmod 777 installscript.sh```
-6. Execute the script with ./installscript.sh and follow the instructions in it.
+6. Execute the script and follow the instructions in it.  
+   ```./installscript.sh
+```
 
 # To do
 The script is fully functional and works like a charm, but I have not added all features I would like. I want to add the following things before I make it a version 1.0:
 
-- [] Automated backup
-- [] Automatic configured unattended-upgrades, apt-listchanges and needrestart
+- [ ] Automated backup
+- [ ] Automatic configured unattended-upgrades, apt-listchanges and needrestart
