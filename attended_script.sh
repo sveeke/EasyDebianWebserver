@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 #############################################################################
@@ -30,7 +29,7 @@ red='\033[0;31m'            # Red
 lred='\033[1;31m'           # Light red
 purple='\033[1;35m'         # Purple
 lpurple='\033[0;49;95m'     # Light purple
-lgreen='\033[0;32m'         # lgreen
+green='\033[0;32m'          # Green
 lgreen='\033[0;49;92m'      # Light lgreen
 yellow='\033[1;33m'         # Yellow
 lyellow='\033[0;49;93m'     # Light yellow
@@ -42,7 +41,14 @@ nc='\033[0m'                # No color
 
 
 
-## Beginning script execution
+## BEGINNING SCRIPT
+
+# https://lobste.rs/c/4lfcnm (danielrheath)
+set -e # stop the script on errors
+set -u # unset variables are an error
+set -o pipefail # piping a failed process into a successful one is an arror
+
+# License and introduction
 clear
 echo
 echo -e "${lyellow}
@@ -75,7 +81,7 @@ sleep 5
 
 
 
-## Requirements
+## REQUIREMENTS
 echo
 echo
 echo -e "${lyellow}CHECKING REQUIREMENTS"
@@ -84,13 +90,11 @@ echo -e "${lyellow}CHECKING REQUIREMENTS"
 echo -e -n "${white}Script is running as root..."
 
 if [ "$EUID" -ne 0 ]; then
-        echo -e "\t\t\t\t\t${white}[${lred}NO${white}]${nc}"
+        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
-        echo -e "${lred}____________________________________________________________________________________
-Hi,
+        echo -e "${red}***********************************************************************************
 This script should be run as root. Use sudo -s or su root and run the script again.
-Good luck!
-____________________________________________________________________________________${nc}"
+***********************************************************************************${nc}"
         echo
         exit
 fi
@@ -107,14 +111,12 @@ DIST=${OS::-6}
 RELEASE=$(head -n 1 /etc/*-release)
 
 if [[ $DEBVER != "8" ]]; then
-        echo -e "\t\t\t\t\t${white}[${lred}NO${white}]${nc}"
+        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
-        echo -e "${lred}____________________________________________________________________________________
-Hi,
-This script can only run on Debian 8, you are running $DIST.
+        echo -e "${red}**************************************************************************************************
+This script can only run on Debian 8, you are running $DIST. 
 Please install Debian 8 Jessie first.
-Good Luck!
-____________________________________________________________________________________${nc}"
+**************************************************************************************************${nc}"
         echo
         exit
 fi
@@ -122,24 +124,19 @@ fi
 echo -e "\t\t\t\t\t${white}[${lgreen}OK${white}]${nc}"
 
 # Checking internet connection
-echo -e -n "${white}Connected to the internet...${nc}"
+echo -e -n "${white}Checking internet connection...${nc}"
 wget -q --tries=10 --timeout=20 --spider www.google.com
 if [[ $? -eq 0 ]]; then
         echo -e "\t\t\t\t\t${white}[${lgreen}YES${white}]${nc}"
-else
-        echo -e "\t\t\t\t\t${white}[${lred}NO${white}]${nc}"
+    else
+        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
-echo -e "${lred}____________________________________________________________________________________
-Hi,
-This script needs a functioning internet connection.
-Please connect to the internet first.
-Good Luck!
-____________________________________________________________________________________${nc}"
+echo -e "${red}******************************************************************************************
+This script needs a functioning internet connection. Please connect to the internet first.
+******************************************************************************************${nc}"
         echo
         exit
 fi
-
-sleep 1
 
 
 
@@ -148,7 +145,7 @@ echo
 echo -e "${lyellow}USER INPUT"
 echo -e "${white}The script will gather some information from you.${nc}"
 echo
-read -p "$(echo -e "${white}Enter your username: "${lpurple})" USER
+read -p "$(echo -e "${white}Enter your username: "${lgreen})" USER
 while true
 	do
 		read -s -p "$(echo -e "${white}Enter your password: ${nc}")" PASS
@@ -156,34 +153,43 @@ while true
 		read -s -p "$(echo -e "${white}Enter your Password (again): ${nc}")" PASS2
 		[ "$PASS" = "$PASS2" ] && break
         echo
-        echo -e "${lred}---------------------------------------------"
-		echo -e "${lred}Your passwords don´t match, please try again."
-        echo -e "${lred}---------------------------------------------"
+        echo
+        echo -e "${red}*********************************************"
+		echo -e "${red}Your passwords don´t match, please try again."
+        echo -e "${red}*********************************************"
+        echo
 	done
 echo
 echo
+read -p "$(echo -e "${white}Enter your public SSH key: "${lgreen})" SSH
 echo
-read -p "$(echo -e "${white}Enter your public SSH key: "${lpurple})" SSH
-echo
-echo -e "${white}During the installation of mysql-server (password) and the setup of the UFW firewall (activation) some more user interaction is required.${nc}"
+echo -e "${white}*****************************************************************************
+       Please note that some more user interaction is required later on
+*****************************************************************************${nc}"
 
 sleep 5
 
 
 
-## Replace mirrors in sources.list
+## REPLACE REPOSITORIES
 echo
 echo
 echo -e "${lyellow}REPLACING REPOSITORIES"
 echo -e -n "${white}Updating sources.list...${nc}"
 
 echo "
-deb http://httpredir.debian.org/debian jessie main contrib non-free
-deb-src http://httpredir.debian.org/debian jessie main contrib non-free
-deb http://httpredir.debian.org/debian jessie-updates main contrib non-free
-deb-src http://httpredir.debian.org/debian jessie-updates main contrib non-free
-deb http://security.debian.org/ jessie/updates main contrib non-free
-deb-src http://security.debian.org/ jessie/updates main contrib non-free" > /etc/apt/sources.list
+# Standard repositories
+deb http://httpredir.debian.org/debian jessie main contrib
+deb-src http://httpredir.debian.org/debian jessie main contrib
+deb http://httpredir.debian.org/debian jessie-updates main contrib
+deb-src http://httpredir.debian.org/debian jessie-updates main contrib
+
+# Security repositories
+deb http://security.debian.org/ jessie/updates main contrib
+deb-src http://security.debian.org/ jessie/updates main contrib
+
+# Backport repositories
+deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list
 
 echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
@@ -191,20 +197,89 @@ sleep 1
 
 
 
-## Updating OS to the latest version
+# UPDATE OPERATING SYSTEM
 echo
 echo
-echo -e "${lblue}UPDATING OPERATING SYSTEM"
-echo -e "${lyellow}Downloading package list from repositories... ${nc}"
-echo
+echo -e "${lyellow}UPDATING OPERATING SYSTEM"
+echo -e "${white}Downloading package list from repositories... ${grey}"
        	apt-get update
 echo
 
-echo -e "${lyellow}Downloading and installing new packages...${nc}"
-echo
+echo -e "${white}Downloading and installing new packages...${grey}"
         apt-get -y upgrade
 
 sleep 1
+
+
+
+## INSTALLING NEW SOFTWARE
+echo
+echo
+echo -e "${lyellow}INSTALLING SOFTWARE"
+echo -e "${white}Note: user interaction required when installing MySQL/MariaDB!"
+echo
+
+sleep 2
+
+echo -e "${white}Installing apt-transport-https...${grey}"
+        apt-get -y install apt-transport-https
+echo
+
+echo -e "${white}Installing aunattended-upgrades...${grey}"
+        apt-get -y install unattended-upgrades
+        apt-get -y install apt-listchanges
+echo
+
+echo -e "${white}Installing ufw...${grey}"
+        apt-get -y install ufw
+echo
+
+echo -e "${white}Installing sudo...${grey}"
+       	apt-get -y install sudo
+echo
+
+echo -e "${white}Installing zip...${grey}"
+        apt-get -y install zip
+echo
+
+echo -e "${white}Installing unzip...${grey}"
+        apt-get -y install unzip
+echo
+
+echo -e "${white}Installing sysstat...${grey}"
+        apt-get -y install sysstat
+echo
+
+echo -e "${white}Installing curl...${grey}"
+        apt-get -y install curl
+echo
+
+echo -e "${white}Installing mariadb-server...${grey}"
+        apt-get -y install mariadb-server
+echo
+
+echo -e "${white}Installing mariadb-client...${grey}"
+        apt-get -y install mariadb-client
+echo
+
+echo -e "${white}Installing apache2...${grey}"
+        apt-get -y install apache2
+echo
+
+echo -e "${white}Installing php5...${grey}"
+        apt-get -y install php5
+        apt-get -y install php5-mysql
+        apt-get -y install php5-gd
+echo
+
+echo -e "${white}Installing libapache2-mod-php5...${grey}"
+        apt-get -y install libapache2-mod-php5
+echo
+
+echo -e "${white}Installing certbot...${grey}"
+        apt-get -y install python-certbot-apache -t jessie-backports
+
+sleep 3
 
 
 
@@ -214,143 +289,139 @@ echo
 
 HASH=$(openssl passwd -1 -salt temp $PASS)
 
-echo -e "${lyellow}USER ACCOUNTS AND SSH"
+echo -e "${lyellow}USER ACCOUNT"
 
-echo -e "${lyellow}Creating user account...${nc}"
+echo -e -n "${white}Creating user account...${nc}"
         useradd $USER -s /bin/bash -m -p $HASH
-echo
+    echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
-echo -e "${lyellow}Creating SSH-folder...${nc}"
+echo -e -n "${white}Creating SSH-folder...${nc}"
         mkdir /home/$USER/.ssh
-echo
+    echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
-echo -e "${lyellow}Adding public key...${nc}"
-        echo "$SSH" > /home/$USER/.ssh/authorized_keys
-echo
+echo -e -n "${white}Adding public key...${nc}"
+    echo "$SSH" > /home/$USER/.ssh/authorized_keys
+    echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
-echo -e "${lyellow}Setting folder and file permissions...${nc}"
+echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:$USER /home/$USER/.ssh
         chown $USER:$USER /home/$USER/.ssh/authorized_keys
         chmod 700 /home/$USER/.ssh
         chmod 600 /home/$USER/.ssh/authorized_keys
+    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+
+echo -e -n "${white}Adding user account to sudoers file...${nc}"
+echo "
+# User privilege specification
+$USER   ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
 
 
 
-## Installing new software
-echo
-echo
-echo -e "${lyellow}INSTALLING SOFTWARE"
-echo -e "${lyellow}Installing ufw...${nc}"
-        apt-get -y install ufw
-echo
-
-echo -e "${lyellow}Installing sudo...${nc}"
-       	apt-get -y install sudo
-echo
-
-echo -e "${lyellow}Installing zip...${nc}"
-        apt-get -y install zip
-echo
-
-echo -e "${lyellow}Installing unzip...${nc}"
-        apt-get -y install unzip
-echo
-
-echo -e "${lyellow}Installing curl...${nc}"
-        apt-get -y install curl
-echo
-
-echo -e "${lyellow}Installing mariadb-server...${nc}"
-        apt-get -y install mariadb-server
-echo
-
-echo -e "${lyellow}Installing mariadb-client...${nc}"
-        apt-get -y install mariadb-client
-echo
-
-echo -e "${lyellow}Installing apache2...${nc}"
-        apt-get -y install apache2
-echo
-
-echo -e "${lyellow}Installing php5...${nc}"
-        apt-get -y install php5
-echo
-
-echo -e "${lyellow}Installing libapache2-mod-php5...${nc}"
-        apt-get -y install libapache2-mod-php5
-
-sleep 3
-
-
-
-## Configuring firewall
+## CONFIGURING FIREWALL
 echo
 echo
 echo -e "${lyellow}CONFIGURING FIREWALL"
-echo -e "${lyellow}Configuring firewall for incoming traffic...${nc}"
+
+echo -e "${white}Configuring firewall for incoming traffic...${grey}"
         ufw default deny
 echo
 
-echo -e "${lyellow}Configuring firewall for ssh traffic...${nc}"
+echo -e "${white}Configuring firewall for ssh traffic...${grey}"
         ufw allow ssh
 echo
 
-echo -e "${lyellow}Configuring firewall for http traffic...${nc}"
+echo -e "${white}Configuring firewall for http traffic...${grey}"
         ufw allow http
 echo
 
-echo -e "${lyellow}Configuring firewall for https traffic...${nc}"
+echo -e "${white}Configuring firewall for https traffic...${grey}"
         ufw allow https
 echo
 
-echo -e "${lyellow}Activating logging...${nc}"
+echo -e "${white}Activating logging...${grey}"
         ufw logging on
 echo
 
-echo -e "${lyellow}Activating firewall...${nc}"
+echo -e "${white}Activating firewall...${lgreen}"
 	ufw enable
 
 sleep 1
 
 
 
-## Configuring sudo
+## CONFIGURING UNATTENDED-UPGRADES
 echo
 echo
-echo -e "${lyellow}CONFIGURING SUDO"
-echo -e -n "${lyellow}Adding user to the sudoers file...${nc}"
+echo -e "${lyellow}CONFIGURING UNATTENDED-UPGRADES"
+echo -e -n "${white}Adding user to the sudoers file...${nc}"
 echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
 
 
 
-## Configuring webserver
+## CONFIGURING WEBSERVER
 echo
 echo
-echo -e "${lyellow}CONFIGURING WEBSERVER"
-echo -e "${lyellow}Creating folders...${nc}"
-        mkdir /var/www/html/web
-        mkdir /var/www/html/tools
-echo
-
-echo -e "${lyellow}Setting folder ownership...${nc}"
-        chown www-data:www-data /var/www/html/web
-        chown www-data:www-data /var/www/html/tools
-echo
-
-echo -e "${lyellow}Activating apache2 modules...${nc}"
+echo -e -n "${white}Activating apache2 modules...${grey}"
         a2enmod rewrite
         a2enmod actions
         a2enmod ssl
 echo
 
-echo -e "${lyellow}Modifying apache2.conf for wordpress...${nc}"
-echo
-
-echo -e "${lyellow}Restarting webserver...${nc}"
+echo -e -n "${white}Restarting webserver...${grey}"
         service apache2 restart
+    echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+sleep 1
+
+
+
+## CONFIGURING PHP5
+echo
+echo
+echo -e "${lyellow}CONFIGURING PHP5"
+echo -e -n "${white}Adding user to the sudoers file...${nc}"
+echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
+
+
+
+## NOTES
+echo
+echo
+echo
+echo
+echo -e "${white}
+******************************************************************************************************
+                                            ${lyellow}IMPORTANT!${white}
+******************************************************************************************************
+
+Although you now have a fully functional Debian based web server, you still need to do a few things 
+in order to make it more secure.
+
+    1:  You should make sure that you can log in with your newly created user account and private key. 
+        If succesfull, disable password authentication so only key authentication is allowed. 
+
+        You can do this by editing /etc/ssh/sshd_config and changing the following two lines:
+        - Delete the pound (#) before '#AuthorizedKeysFile      %h/.ssh/authorized_keys'
+        - Change '#PasswordAuthentication yes' to 'PasswordAuthentication no' (delete pound + yes>no)
+
+    2:  You should reboot your server in case of updates that require a fresh startup.
+
+        You can do this by using the command 'shutdown -r now' or 'reboot'.
+
+
+I hope you are happy with your new web server and that it serves you well. If you have any questions
+you can post them on https://github.com/sveeke/EasyDebianWebserver/issues/1.
+
+Good luck!
+
+******************************************************************************************************"
+sleep 10
+echo
+echo
+exit
