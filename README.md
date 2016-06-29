@@ -22,7 +22,7 @@ Please note that this script is made for my use case and that it probably won't 
 
 # How to run the script?
 1. Become root if you are not already.  
-   ```sudo -s [or] su root```
+   ```su root```
 2. Change directory to /tmp or another folder to you liking.  
    ```cd /tmp```
 3. Download the file with git, direct link (example below) or copy and paste the content from github over in your text editor.  
