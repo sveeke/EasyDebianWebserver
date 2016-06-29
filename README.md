@@ -1,5 +1,5 @@
 # SimpleDebianWebserver
-A simple Debian bashscript to create a basic webserver from a clean Debian 8 Jessie install.
+A simple Debian bash script to create a basic webserver from a clean Debian 8 Jessie install.
 
 *Note: the script is around version 0.91. I still need to add the automatic configuration of unattended-upgrades. The rest is fully functional though.*
 
