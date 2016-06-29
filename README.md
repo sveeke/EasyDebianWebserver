@@ -9,39 +9,34 @@ Please note that this script is made for my use case and that it probably won't 
 
 # What does the script do?
 
-It:
-- adds a user with correctly set up SSH folder permissions.
-- installs sudo and adds the user to the sudoers file.
-- replaces the repositories in sources.list.
-- installs and configures a basic firewall (UFW).
-- takes care of its own updates and upgrades.
-- installs a well-known webserver (apache2)
-- installs other standard software like php5.
-- installs a comprehensive database server (MariaDB).
-- It installs the Let's Encrypt client certbot so TLS will be easier than pie.
-- It installs some handy tools like apt-transport-https, (un)zip, and sysstat.
-
-# How to get the script?
-You have a couple of options:
-
-1) Download the script with Git.
-2) Unzip 'wget https://github.com/sveeke/EasyDebianWebserver/archive/master.zip' after downloading.
-Of course you can use git 
+- Adds a user with correctly set up SSH folder permissions.
+- Installs sudo and adds the user to the sudoers file.
+- Replaces the repositories in sources.list.
+- Installs and configures a basic firewall (UFW).
+- Takes care of its own updates and upgrades.
+- Installs a well-known webserver (apache2)
+- Installs other standard software like php5.
+- Installs a comprehensive database server (MariaDB).
+- Installs the Let's Encrypt client certbot so TLS will be easier than pie.
+- Installs some handy tools like apt-transport-https, (un)zip, and sysstat.
 
 # How to run the script?
-Just execute the following commands in the same folder where you have stored the installscript.sh file:
+1. Become root if you are not already.  
+   ```sudo -s [or] su root```
+2. Change directory to /tmp or another folder to you liking.  
+   ```cd /tmp```
+3. Download the file with git, direct link (example below) or copy and paste the content from github over in your text editor.  
+   ```wget https://github.com/sveeke/EasyDebianWebserver/archive/master.zip```
+4. Unzip the archived repository.  
+   ```unzip master.zip```
+5. Give proper permissions to the script.  
+   ```chmod 777 installscript.sh```
+6. Execute the script and follow the instructions in it.
+   ```./installscript``` 
 
-```sudo -s [or] su root (if you are not root)
-chmod 777 installscript.sh
-./installscript.sh```
 
+# To do
+The script is fully functional and works like a charm, but I have not added all features I would like. I want to add the following things before I make it a version 1.0:
 
-
-TO DO
-
-- Edit SSHD_Config
-- Backup ?
-- unattendedupgrades
-- apt-listchanges
-- needrestart
-
+- [] Automated backup
+- [] Automatic configured unattended-upgrades, apt-listchanges and needrestart
