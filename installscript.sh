@@ -292,7 +292,7 @@ HASH=$(openssl passwd -1 -salt temp $PASS)
 echo -e "${lyellow}USER ACCOUNT"
 
 echo -e -n "${white}Creating user account...${nc}"
-        useradd $USER -s /bin/bash -m -p $HASH
+        useradd $USER -s /bin/bash -m -U -p $HASH
     echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 echo -e -n "${white}Creating SSH-folder...${nc}"
