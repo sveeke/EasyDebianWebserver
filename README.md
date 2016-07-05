@@ -21,6 +21,8 @@ Please note that this script is made for my use case and that it probably won't 
 - Installs some handy tools like apt-transport-https, (un)zip, and sysstat.
 
 # How to run the script?
+Note: connecting with SSH makes pasting things like the SSH-key easier.
+
 1. Become root if you are not already.  
    ```su root```
 2. Change directory to /tmp or another folder to you liking.  
