@@ -270,6 +270,7 @@ echo -e "${white}Installing php5...${grey}"
         apt-get -y install php5
         apt-get -y install php5-mysql
         apt-get -y install php5-gd
+        apt-get -y install php5-imap
 echo
 
 echo -e "${white}Installing libapache2-mod-php5...${grey}"
