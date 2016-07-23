@@ -32,7 +32,8 @@ Note: connecting with SSH makes pasting things like the SSH-key easier.
 5. Give permissions to the script.  
    ```chmod 777 installscript.sh```
 6. Execute the script and follow the instructions in it.  
-   ```./installscript.sh```
+   ```./installscript.sh
+```
 
 # To do
 The script is fully functional and works like a charm, but I have not added all features I would like. I want to add the following things before I make it a version 1.0:
