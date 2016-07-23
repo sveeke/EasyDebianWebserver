@@ -1,9 +1,9 @@
 # SimpleDebianWebserver
 A simple Debian bash script to create a basic webserver from a clean Debian 8 Jessie install.
 
-*Note: the script is around version 0.91. I still need to add the automatic configuration of unattended-upgrades. The rest is fully functional though.*
+*Note: the script is around version 0.95. I still need to add the automatic backups. The rest is fully functional though.*
 
-I have to install and configure Debian based webservers far to often, but everytime it's the same steps over and over again and that is... boring :(. I didn't know how to use bash so creating a script that would save me a lot of time in the long run seemed like a good enough reason to start learning it. If you have any questions, suggestions or comments, let me know!
+I have to install and configure Debian based webservers far to often, but everytime it's the same steps over and over again and that is... boring :(. I did not know how to use bashscripts so creating a script that would save me a lot of time in the long run seemed like a good enough reason to start learning it. If you have any questions, suggestions or comments, let me know!
 
 Please note that this script is made for my use case and that it probably won't be the ideal script for everyone. That being said, I think this script will work for the majority of the basic Debian users like me. If it doesn't, feel free to suggest improvements or changes.
 
@@ -41,4 +41,4 @@ Note: connecting with SSH makes pasting things like the SSH-key easier.
 The script is fully functional and works like a charm, but I have not added all features I would like. I want to add the following things before I make it a version 1.0:
 
 - [ ] Automated backup
-- [ ] Automatic configured unattended-upgrades, apt-listchanges and needrestart
+- [ ] 
