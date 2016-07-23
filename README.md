@@ -29,8 +29,8 @@ Note: connecting with SSH makes pasting things like the SSH-key easier.
    ```cd /tmp```
 3. Download the file with git, direct link (example below) or copy and paste the content from github over in your text editor.  
    ```wget https://raw.githubusercontent.com/sveeke/easydebianwebserver/master/installscript.sh```
-5. Give permissions to the script.  
-   ```chmod 777 installscript.sh```
+5. Give proper permissions to the script.  
+   ```chmod 700 installscript.sh```
 6. Execute the script and follow the instructions in it.  
    ```./installscript.sh
 ```
@@ -43,3 +43,5 @@ The script is fully functional and works like a charm, but I have not added all 
 # FAQ
 1. Will this script also run on Ubuntu or other Debian based distributions?
    Probably, but I have not tested it. Ubuntu for example comes with UFW already installed but that should not matter much for the script to run properly. Just try it to see if it works.
+2. What is backupped to where?
+   There will be daily local backups of /etc/apache2, etc/ssl, etc/php5, /var/www/html and the MySQL databases to /youruseraccount/backup. From there you can copy or sync them with rsync, syncthing, (s)ftp, scp etc. to your backupserver.
