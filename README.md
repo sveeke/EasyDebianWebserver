@@ -28,9 +28,7 @@ Note: connecting with SSH makes pasting things like the SSH-key easier.
 2. Change directory to /tmp or another folder to you liking.  
    ```cd /tmp```
 3. Download the file with git, direct link (example below) or copy and paste the content from github over in your text editor.  
-   ```wget https://github.com/sveeke/EasyDebianWebserver/archive/master.zip```
-4. Unzip the archived repository.  
-   ```unzip master.zip```
+   ```wget https://raw.githubusercontent.com/sveeke/easydebianwebserver/master/installscript.sh```
 5. Give permissions to the script.  
    ```chmod 777 installscript.sh```
 6. Execute the script and follow the instructions in it.  
