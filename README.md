@@ -9,11 +9,11 @@ Please note that this script is made for my use case and that it probably won't 
 
 # What does the script do?
 
-- Adds a user with correctly set up SSH folder permissions.
+- Creates a user with correctly set up SSH folder permissions.
 - Installs sudo and adds the user to the sudoers file.
 - Replaces the repositories in sources.list.
 - Installs and configures a basic firewall (UFW).
-- Takes care of its own updates and upgrades.
+- Takes care of its own security updates.
 - Installs a well-known webserver (apache2)
 - Installs other standard software like php5.
 - Installs a comprehensive database server (MariaDB).
@@ -31,14 +31,16 @@ Note: connecting with SSH makes pasting things like the SSH-key easier.
    ```wget https://github.com/sveeke/EasyDebianWebserver/archive/master.zip```
 4. Unzip the archived repository.  
    ```unzip master.zip```
-5. Give proper permissions to the script.  
+5. Give permissions to the script.  
    ```chmod 777 installscript.sh```
 6. Execute the script and follow the instructions in it.  
-   ```./installscript.sh
-```
+   ```./installscript.sh```
 
 # To do
 The script is fully functional and works like a charm, but I have not added all features I would like. I want to add the following things before I make it a version 1.0:
 
 - [ ] Automated backup
-- [ ] 
+
+# FAQ
+1. Will this script also run on Ubuntu or other Debian based distributions?
+   Probably, but I have not tested it. Ubuntu for example comes with UFW already installed but that should not matter much for the script to run properly. Just try it to see if it works.
