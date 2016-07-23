@@ -1,26 +1,7 @@
 #!/bin/bash
-
-#############################################################################
-# Copyright 2016 Sebas Veeke
-# 
-# This file is part of SimpleDebianWebserver
-#
-# SimpleDebianWebserver is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU Affero General Public License 
-# version 3 as published by the Free Software Foundation. 
-#
-# SimpleDebianWebserver is distributed in the hope that it will be 
-# useful,but without any warranty. See the GNU Affero General Public 
-# License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License 
-# along with SimpleDebianWebserver. If not, see <http://www.gnu.org/licenses/>
-# 
-# Contact:
-# > e-mail      mail@sebasveeke.nl
-# > GitHub      sveeke
-#############################################################################
-
+# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
+# See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
+# Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
 
 
 ## Colours & markup
@@ -62,7 +43,7 @@ echo -e "${lyellow}
 # version 3 as published by the Free Software Foundation.                   #
 #                                                                           #
 # SimpleDebianWebserver is distributed in the hope that it will be          #
-# useful,but without any warranty. See the GNU Affero General Public        #
+# useful, but without any warranty. See the GNU Affero General Public        #
 # License for more details.                                                 #
 #                                                                           #
 # You should have received a copy of the GNU Affero General Public License  #
@@ -92,9 +73,9 @@ echo -e -n "${white}Script is running as root..."
 if [ "$EUID" -ne 0 ]; then
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
-        echo -e "${red}***********************************************************************************
-This script should be run as root. Use sudo -s or su root and run the script again.
-***********************************************************************************${nc}"
+        echo -e "${red}************************************************************************
+This script should be run as root. Use su root and run the script again.
+************************************************************************${nc}"
         echo
         exit
 fi
@@ -163,13 +144,23 @@ echo
 echo
 read -p "$(echo -e "${white}Enter your public SSH key: "${lgreen})" SSH
 echo
+read -p "$(echo -e "${white}Enter the server's hostname: "${lgreen})" HOSTNAME
+echo
 echo -e "${white}*****************************************************************************
        Please note that some more user interaction is required later on
 *****************************************************************************${nc}"
 
 sleep 5
 
+## CHANGING HOSTNAME
+echo
+echo
+echo -e "${lyellow}CHANGING HOSTNAME"
+echo -e -n "${white}Modifying /etc/hostname...${nc}"
+echo "$HOSTNAME" >> /etc/hostname
+echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
+sleep 1
 
 ## REPLACE REPOSITORIES
 echo
@@ -195,9 +186,7 @@ echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
 
-
-
-# UPDATE OPERATING SYSTEM
+## UPDATE OPERATING SYSTEM
 echo
 echo
 echo -e "${lyellow}UPDATING OPERATING SYSTEM"
@@ -216,72 +205,35 @@ sleep 1
 echo
 echo
 echo -e "${lyellow}INSTALLING SOFTWARE"
-echo -e "${white}Note: user interaction required when installing MySQL/MariaDB!"
+echo -e "${white}The following software will be installed:
+
+- apt-transport-https           For using apt with https
+- unattended-upgrades           For automatically upgrading Debian with security updates
+- ntp                           Network Time Protocol                      
+- ufw                           This is an easy to use firewall frontend voor iptables
+- sudo                          Allows the user to execute commands as root
+- zip                           For making zip archives
+- unzip                         For extracting zip archives
+- sysstat                       Some handy system performance tools
+- curl                          Transfer data in different ways
+- mariadb-server                The MySQL based database server
+- mariadb-client                The MySQL based database client 
+- apache2                       The Apache webserver
+- php5                          Popular hypertext preprocessor for dynamic content
+- php5-mysql                    PHP5 extention for interaction with mysql
+- php5-gd                       PHP5 extention for handling images from php
+- libapache2-mod-php5           Integrated php in the apache webserver
+- python-certbot-apache         The official Let's Encrypt client
+
+
+Note: user interaction required when installing MySQL/MariaDB!
+
+Starting in 10 seconds.${grey}"
+sleep 10
 echo
-
-sleep 2
-
-echo -e "${white}Installing apt-transport-https...${grey}"
-        apt-get -y install apt-transport-https
 echo
-
-echo -e "${white}Installing aunattended-upgrades...${grey}"
-        apt-get -y install unattended-upgrades
-        apt-get -y install apt-listchanges
-echo
-
-echo -e "${white}Installing ufw...${grey}"
-        apt-get -y install ufw
-echo
-
-echo -e "${white}Installing sudo...${grey}"
-       	apt-get -y install sudo
-echo
-
-echo -e "${white}Installing zip...${grey}"
-        apt-get -y install zip
-echo
-
-echo -e "${white}Installing unzip...${grey}"
-        apt-get -y install unzip
-echo
-
-echo -e "${white}Installing sysstat...${grey}"
-        apt-get -y install sysstat
-echo
-
-echo -e "${white}Installing curl...${grey}"
-        apt-get -y install curl
-echo
-
-echo -e "${white}Installing mariadb-server...${grey}"
-        apt-get -y install mariadb-server
-echo
-
-echo -e "${white}Installing mariadb-client...${grey}"
-        apt-get -y install mariadb-client
-echo
-
-echo -e "${white}Installing apache2...${grey}"
-        apt-get -y install apache2
-echo
-
-echo -e "${white}Installing php5...${grey}"
-        apt-get -y install php5
-        apt-get -y install php5-mysql
-        apt-get -y install php5-gd
-        apt-get -y install php5-imap
-echo
-
-echo -e "${white}Installing libapache2-mod-php5...${grey}"
-        apt-get -y install libapache2-mod-php5
-echo
-
-echo -e "${white}Installing certbot...${grey}"
-        apt-get -y install python-certbot-apache -t jessie-backports
-
-sleep 3
-
+apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd libapache2-mod-php5
+apt-get -y install python-certbot-apache -t jessie-backports
 
 
 ## Accounts & SSH
@@ -291,7 +243,6 @@ echo
 HASH=$(openssl passwd -1 -salt temp $PASS)
 
 echo -e "${lyellow}USER ACCOUNT"
-
 echo -e -n "${white}Creating user account...${nc}"
         useradd $USER -s /bin/bash -m -U -p $HASH
     echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
@@ -325,29 +276,21 @@ sleep 1
 echo
 echo
 echo -e "${lyellow}CONFIGURING FIREWALL"
-
 echo -e "${white}Configuring firewall for incoming traffic...${grey}"
-        ufw default deny
+        ufw default deny incoming
 echo
-
-echo -e "${white}Configuring firewall for ssh traffic...${grey}"
+echo -e "${white}Configuring firewall for ssh, http and https traffic...${grey}"
         ufw allow ssh
-echo
-
-echo -e "${white}Configuring firewall for http traffic...${grey}"
         ufw allow http
-echo
-
-echo -e "${white}Configuring firewall for https traffic...${grey}"
         ufw allow https
 echo
-
 echo -e "${white}Activating logging...${grey}"
         ufw logging on
 echo
-
-echo -e "${white}Activating firewall...${lgreen}"
-	ufw enable
+echo -e -n "${white}Activating firewall on next reboot...${lgreen}"
+	sed -i.bak 's/ENABLED=no/ENABLED=yes/g' /etc/ufw/ufw.conf
+    chmod 0644 /etc/ufw/ufw.conf
+echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
 
@@ -357,7 +300,8 @@ sleep 1
 echo
 echo
 echo -e "${lyellow}CONFIGURING UNATTENDED-UPGRADES"
-echo -e -n "${white}Adding user to the sudoers file...${nc}"
+echo -e -n "${white}Activating unattended-upgrades...${nc}"
+echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
 echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
@@ -367,7 +311,7 @@ sleep 1
 ## CONFIGURING WEBSERVER
 echo
 echo
-echo -e -n "${white}Activating apache2 modules...${grey}"
+echo -e "${white}Activating apache2 modules...${grey}"
         a2enmod rewrite
         a2enmod actions
         a2enmod ssl
@@ -401,7 +345,7 @@ echo -e "${white}
                                             ${lyellow}IMPORTANT!${white}
 ******************************************************************************************************
 
-Although you now have a fully functional Debian based web server, you still need to do a few things 
+Although you now have a fully functional Debian based webserver, you still need to do a few things 
 in order to make it more secure.
 
     1:  You should make sure that you can log in with your newly created user account and private key. 
@@ -411,13 +355,13 @@ in order to make it more secure.
         - Delete the pound (#) before '#AuthorizedKeysFile      %h/.ssh/authorized_keys'
         - Change '#PasswordAuthentication yes' to 'PasswordAuthentication no' (delete pound + yes>no)
 
-    2:  You should reboot your server in case of updates that require a fresh startup.
+    2:  You should reboot your server to enable the hostname, firewall and possibly also kernel updates.
 
         You can do this by using the command 'shutdown -r now' or 'reboot'.
 
 
-I hope you are happy with your new web server and that it serves you well. If you have any questions
-you can post them on https://github.com/sveeke/EasyDebianWebserver/issues/1.
+I hope you are happy with your new webserver and that it serves you well. If you have any questions
+you can post them on https://github.com/sveeke/EasyDebianWebserver.
 
 Good luck!
 
