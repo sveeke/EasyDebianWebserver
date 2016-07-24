@@ -59,7 +59,7 @@ You can deploy your website(s)! Below are some steps to help you on your way.
       ```CustomLog ${APACHE_LOG_DIR}/access.log combined```
 
 5. Add certificates to the website (```certbot --apache```) and choose secure automated setup
-6. Activate both the configurations (```a2ensite /etc/apache2/sites-available/website*
+6. Activate both the configurations (```a2ensite /etc/apache2/sites-available/website*```)
 7. Restart the webserver (```service apache2 restart```)
 8. Install your website in /var/www/html/website
 
