@@ -28,20 +28,41 @@ Note: connecting with SSH makes pasting things like the SSH-key easier.
 2. Change directory to /tmp or another folder to you liking.  
    ```cd /tmp```
 3. Download the file with git, direct link (example below) or copy and paste the content from github over in your text editor.  
-   ```wget https://raw.githubusercontent.com/sveeke/easydebianwebserver/master/installscript.sh```
+   ```wget https://raw.githubusercontent.com/sveeke/easydebianwebserver/master/EasyDebianWebserver.sh```
 5. Give proper permissions to the script.  
-   ```chmod 700 installscript.sh```
+   ```chmod 700 EasyDebianWebserver.sh```
 6. Execute the script and follow the instructions in it.  
-   ```./installscript.sh
-```
+   ```./EasyDebianWebserver.sh ```
 
 # To do
-The script is fully functional and works like a charm, but I have not added all features I would like. I want to add the following things before I make it a version 1.0:
-
-- [ ] Automated backup
+The script is fully functional and works like a charm, but I have not added all features I would like. I want to add automated backup of mysql databases before I make it 1.0.
 
 # FAQ
-1. Will this script also run on Ubuntu or other Debian based distributions?
-   Probably, but I have not tested it. Ubuntu for example comes with UFW already installed but that should not matter much for the script to run properly. Just try it to see if it works.
-2. What is backupped to where?
-   There will be daily local backups of /etc/apache2, etc/ssl, etc/php5, /var/www/html and the MySQL databases to /youruseraccount/backup. From there you can copy or sync them with rsync, syncthing, (s)ftp, scp etc. to your backupserver.
+### I installed the script, what now?
+You can deploy your website(s)! Below are some steps to help you on your way.
+
+1. Delete the stock Apache index.html (```rm /var/www/html/index.html```)
+2. Create a folder for your website (```mkdir /var/www/html/website```)
+3. Make sure the DNS of your domain(s) is properly setup. For example:  
+   
+   A domain.tld server-ip TTL=3600  
+   A www.domain.tld server-ip TTL=3600  
+4. Create an apache configuration file (```nano /etc/apache2/sites-available/website.conf```) with the following content:  
+   
+   ```<VirtualHost *:80>```  
+      ```ServerName www.domain.tld```  
+      ```ServerAlias domain.tld```  
+      ```ServerAdmin mail@yourdomain.tld```  
+      ```DocumentRoot /var/www/html/website```  
+
+      ```ErrorLog ${APACHE_LOG_DIR}/error.log```  
+      ```CustomLog ${APACHE_LOG_DIR}/access.log combined```
+
+5. Add certificates to the website (```certbot --apache```)
+6. Install your website in /var/www/html/website
+
+### Will this script also run on Ubuntu or other Debian based distributions?
+Probably, but I have not tested it. Ubuntu for example comes with UFW already installed but that should not matter much for the script to run properly. Just try it to see if it works :).
+
+### What is backupped to where?
+There will be daily local backups of /etc/apache2, etc/ssl, etc/php5, /var/www/html and the MySQL databases to /youruseraccount/backup. From there you can copy or sync them with rsync, syncthing, (s)ftp, scp etc. to your backupserver.
