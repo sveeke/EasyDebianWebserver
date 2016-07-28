@@ -37,7 +37,7 @@ Note: connecting with SSH makes pasting things like the SSH-key a lot easier.
 # To do
 The script is fully functional and works like a charm, but I have not added all features I would like. I want to add automated backup of mysql databases before I make it 1.0.
 
-# FAQ
+# FAQ (will be moved to wiki)
 ### I installed the script, what now?
 You can deploy your website(s)! Below are some steps to help you on your way.
 
