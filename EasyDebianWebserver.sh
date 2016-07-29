@@ -119,12 +119,16 @@ This script needs a functioning internet connection. Please connect to the inter
         exit
 fi
 
+sleep 1
+
 
 
 ## USER CONFIGURATION ##
 echo
 echo -e "${lyellow}USER INPUT"
 echo -e "${white}The script will gather some information from you.${nc}"
+echo
+read -p "$(echo -e "${white}Enter the server's hostname: "${lgreen})" HOSTNAME
 echo
 read -p "$(echo -e "${white}Enter your username: "${lgreen})" USER
 while true
@@ -142,15 +146,15 @@ while true
 	done
 echo
 echo
-read -p "$(echo -e "${white}Enter your public SSH key: "${lgreen})" SSH
-echo
-read -p "$(echo -e "${white}Enter the server's hostname: "${lgreen})" HOSTNAME
+read -p "$(echo -e "${white}Enter your AuthorizedKeysFile: "${lgreen})" SSH
 echo
 echo -e "${white}*****************************************************************************
        Please note that some more user interaction is required later on
 *****************************************************************************${nc}"
 
 sleep 5
+
+
 
 ## CHANGING HOSTNAME
 echo
@@ -161,6 +165,8 @@ echo "$HOSTNAME" >> /etc/hostname
 echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
+
+
 
 ## REPLACE REPOSITORIES
 echo
@@ -236,6 +242,7 @@ apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzi
 apt-get -y install python-certbot-apache -t jessie-backports
 
 
+
 ## Accounts & SSH
 echo
 echo
@@ -287,7 +294,7 @@ echo
 echo -e "${white}Activating logging...${grey}"
         ufw logging on
 echo
-echo -e -n "${white}Activating firewall on next reboot...${lgreen}"
+echo -e -n "${white}Activating firewall on next boot...${lgreen}"
 	sed -i.bak 's/ENABLED=no/ENABLED=yes/g' /etc/ufw/ufw.conf
     chmod 0644 /etc/ufw/ufw.conf
     echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
@@ -321,6 +328,7 @@ echo
 echo -e -n "${white}Restarting webserver...${grey}"
         service apache2 restart
     echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+
 sleep 1
 
 
@@ -339,14 +347,96 @@ echo -e -n "${white}Creating backup folders...${nc}"
 echo -e -n "${white}Creating backup script...${nc}"
 
 echo "
-# This script will backup some relevant folders and all of the MySQL databases. You can modify it to include more folders.
+#!/bin/bash
+# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
+# See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
+# Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
 
-# Backup folders
-# To add more folders, place the folder path of the folder you would like to add in the line below. Make sure the folders are seperated with a space and everything is closed by a dot (.). 
-zip -r /home/$USER/backup/files/backup-$( date '+%Y-%m-%d_%H-%M-%S' ).zip /var/www/html/ /etc/apache2 /etc/ssl /etc/php5 .
+### This script will backup folders and MySQL databases. You can modify it to include more folders or change the backup retention. If you want to change the time or frequency you should use crontab -e.
 
-# Backup MySQL databases" > /home/$USER/backup/script/backup.sh
+## USER VARIABLES
+BACKUP_PATH_FILES="/home/$USER/backup/files"
+BACKUP_PATH_SQL="/home/$USER/backup/databases"
+BACKUP_FOLDERS="/var/www/html/. /etc/apache2 /etc/ssl /etc/php5" # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
+BACKUP_SQL="/var/lib/mysql/." # This is the default folder where databases are stored.
+RETENTION=14 # Backup retention in number of days
 
+
+
+## Set default file permissions
+umask 007
+
+## Backup folders
+tar -cpzf $BACKUP_PATH_FILES/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_FOLDERS
+
+## Backup MySQL databases
+# Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
+service apache2 stop
+sleep 10
+service mysql stop
+sleep 5
+tar -cpzf $BACKUP_PATH_SQL/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_SQL
+service mysql start
+sleep 5
+service apache2 start
+
+## Set backup ownership
+chown $USER:root /home/$USER/backup/files/*
+chown $USER:root /home/$USER/backup/databases/*
+
+## Delete backups older than the RETENTION parameter
+find $BACKUP_PATH_FILES/backup-daily* -mtime +$RETENTION -type f -delete
+find $BACKUP_PATH_SQL/backup-daily* -mtime +$RETENTION -type f -delete
+
+
+
+### Note: to restore backups use 'tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup'" > /home/$USER/backup/script/backup-daily.sh
+
+echo "
+#!/bin/bash
+# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
+# See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
+# Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
+
+### This script will backup folders and MySQL databases. You can modify it to include more folders or change the backup retention. If you want to change the time or frequency you should use crontab -e.
+
+## USER VARIABLES
+BACKUP_PATH_FILES="/home/$USER/backup/files"
+BACKUP_PATH_SQL="/home/$USER/backup/databases"
+BACKUP_FOLDERS="/var/www/html/. /etc/apache2 /etc/ssl /etc/php5" # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
+BACKUP_SQL="/var/lib/mysql/." # This is the default folder where databases are stored.
+RETENTION=180 # Backup retention in number of days
+
+
+
+## Set default file permissions
+umask 007
+
+## Backup folders
+tar -cpzf $BACKUP_PATH_FILES/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_FOLDERS
+
+## Backup MySQL databases
+# Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
+service apache2 stop
+sleep 10
+service mysql stop
+sleep 5
+tar -cpzf $BACKUP_PATH_SQL/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_SQL
+service mysql start
+sleep 5
+service apache2 start
+
+## Set backup ownership
+chown $USER:root /home/$USER/backup/files/*
+chown $USER:root /home/$USER/backup/databases/*
+
+## Delete backups older than the RETENTION parameter
+find $BACKUP_PATH_FILES/backup-weekly* -mtime +$RETENTION -type f -delete
+find $BACKUP_PATH_SQL/backup-weekly* -mtime +$RETENTION -type f -delete
+
+
+
+### Note: to restore backups use 'tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup'" > /home/$USER/backup/script/backup-weekly.sh
 echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 echo -e -n "${white}Setting folder and file permissions...${nc}"
@@ -354,23 +444,22 @@ echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:root /home/$USER/backup/script
         chown $USER:root /home/$USER/backup/files
         chown $USER:root /home/$USER/backup/databases
-        chown $USER:root /home/$USER/backup/script/backup.sh
+        chown $USER:root /home/$USER/backup/script/backup-daily.sh
+        chown $USER:root /home/$USER/backup/script/backup-weekly.sh
         chmod 770 /home/$USER/backup
         chmod 770 /home/$USER/backup/script
         chmod 770 /home/$USER/backup/files
         chmod 770 /home/$USER/backup/databases
-        chmod 770 /home/$USER/backup/script/backup.sh
+        chmod 770 /home/$USER/backup/script/backup-daily.sh
+        chmod 770 /home/$USER/backup/script/backup-weekly.sh
     echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
-echo -e -n "${white}Choosing nano as selected editor for crontab...${nc}"
-#    echo "# Generated by EasyDebianWebserver. Change with the select-editor command.\nSELECTED_EDITOR="/bin/nano"" > /root/.selected_editor
-#    chmod 644 /root/.selected_editor 
-    export EDITOR=/bin/nano
-    echo -e "\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 echo -e -n "${white}Adding cronjob for backup script...${nc}"
-(crontab -l 2>/dev/null; echo "# This cronjob activates the backup.sh script every day at 4:00.
-0 4 * * * /home/$USER/backup/script/backup.sh") | crontab -
+(crontab -l 2>/dev/null; echo "# This cronjob activates the backup_daily.sh script every day at 4:00.
+0 4 * * 1-6 /home/$USER/backup/script/backup_daily.sh
+
+# This cronjob activates the backup_weekly.sh script every week on sunday at 4:00.
+0 4 * * 0 /home/$USER/backup/script/backup_daily.sh ") | crontab -
     echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
