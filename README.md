@@ -31,3 +31,6 @@ If you have any questions, suggestions or comments, let me know!
    ```chmod 700 EasyDebianWebserver.sh```
 6. Execute the script and follow the instructions in it.  
    ```./EasyDebianWebserver.sh ```
+
+## Help and support
+Check the [wiki](https://github.com/sveeke/EasyDebianWebserver/wiki) if you have questions or need help. If you still have questions you can post them at [Issues](https://github.com/sveeke/EasyDebianWebserver/issues)'.
