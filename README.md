@@ -5,7 +5,7 @@ I have to install and configure webservers far to often, but everytime it's the 
 
 If you have any questions, suggestions or comments, let me know!
 
-# What does the script do?
+## What does the script do?
 
 - Creates a user with correctly set up SSH folder permissions.
 - Installs sudo and adds the user to the sudoers file.
@@ -18,7 +18,7 @@ If you have any questions, suggestions or comments, let me know!
 - Installs the Let's Encrypt client certbot so TLS will be easier than pie.
 - Installs some handy tools like apt-transport-https, (un)zip, and sysstat.
 
-# How to run the script?
+## How to run the script?
 *Note: connecting with SSH makes pasting things like the SSH-key a lot easier.*
 
 1. Become root if you are not already.  
