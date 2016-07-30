@@ -346,7 +346,7 @@ echo -e -n "${white}Creating backup folders...${nc}"
 
 echo -e -n "${white}Creating backup script...${nc}"
 
-echo "
+echo -e "
 #!/bin/bash
 # Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
@@ -355,11 +355,11 @@ echo "
 ### This script will backup folders and MySQL databases. You can modify it to include more folders or change the backup retention. If you want to change the time or frequency you should use crontab -e.
 
 ## USER VARIABLES
-BACKUP_PATH_FILES="/home/$USER/backup/files"
-BACKUP_PATH_SQL="/home/$USER/backup/databases"
-BACKUP_FOLDERS="/var/www/html/. /etc/apache2 /etc/ssl /etc/php5" # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
-BACKUP_SQL="/var/lib/mysql/." # This is the default folder where databases are stored.
-RETENTION=14 # Backup retention in number of days
+BACKUP_PATH_FILES='/home/$USER/backup/files'
+BACKUP_PATH_SQL='/home/$USER/backup/databases'
+BACKUP_FOLDERS='/var/www/html/. /etc/apache2 /etc/ssl /etc/php5' # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
+BACKUP_SQL='/var/lib/mysql/.' # This is the default folder where databases are stored.
+RETENTION='14' # Backup retention in number of days
 
 
 
@@ -367,7 +367,7 @@ RETENTION=14 # Backup retention in number of days
 umask 007
 
 ## Backup folders
-tar -cpzf $BACKUP_PATH_FILES/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_FOLDERS
+tar -cpzf \$BACKUP_PATH_FILES/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
 
 ## Backup MySQL databases
 # Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
@@ -375,7 +375,7 @@ service apache2 stop
 sleep 10
 service mysql stop
 sleep 5
-tar -cpzf $BACKUP_PATH_SQL/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_SQL
+tar -cpzf \$BACKUP_PATH_SQL/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
 service mysql start
 sleep 5
 service apache2 start
@@ -385,8 +385,8 @@ chown $USER:root /home/$USER/backup/files/*
 chown $USER:root /home/$USER/backup/databases/*
 
 ## Delete backups older than the RETENTION parameter
-find $BACKUP_PATH_FILES/backup-daily* -mtime +$RETENTION -type f -delete
-find $BACKUP_PATH_SQL/backup-daily* -mtime +$RETENTION -type f -delete
+find \$BACKUP_PATH_FILES/backup-daily* -mtime +\$RETENTION -type f -delete
+find \$BACKUP_PATH_SQL/backup-daily* -mtime +\$RETENTION -type f -delete
 
 
 
@@ -401,11 +401,11 @@ echo "
 ### This script will backup folders and MySQL databases. You can modify it to include more folders or change the backup retention. If you want to change the time or frequency you should use crontab -e.
 
 ## USER VARIABLES
-BACKUP_PATH_FILES="/home/$USER/backup/files"
-BACKUP_PATH_SQL="/home/$USER/backup/databases"
-BACKUP_FOLDERS="/var/www/html/. /etc/apache2 /etc/ssl /etc/php5" # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
-BACKUP_SQL="/var/lib/mysql/." # This is the default folder where databases are stored.
-RETENTION=180 # Backup retention in number of days
+BACKUP_PATH_FILES='/home/$USER/backup/files'
+BACKUP_PATH_SQL='/home/$USER/backup/databases'
+BACKUP_FOLDERS='/var/www/html/. /etc/apache2 /etc/ssl /etc/php5' # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
+BACKUP_SQL='/var/lib/mysql/.' # This is the default folder where databases are stored.
+RETENTION='180' # Backup retention in number of days
 
 
 
@@ -413,7 +413,7 @@ RETENTION=180 # Backup retention in number of days
 umask 007
 
 ## Backup folders
-tar -cpzf $BACKUP_PATH_FILES/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_FOLDERS
+tar -cpzf \$BACKUP_PATH_FILES/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
 
 ## Backup MySQL databases
 # Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
@@ -421,7 +421,7 @@ service apache2 stop
 sleep 10
 service mysql stop
 sleep 5
-tar -cpzf $BACKUP_PATH_SQL/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz $BACKUP_SQL
+tar -cpzf \$BACKUP_PATH_SQL/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
 service mysql start
 sleep 5
 service apache2 start
@@ -431,8 +431,8 @@ chown $USER:root /home/$USER/backup/files/*
 chown $USER:root /home/$USER/backup/databases/*
 
 ## Delete backups older than the RETENTION parameter
-find $BACKUP_PATH_FILES/backup-weekly* -mtime +$RETENTION -type f -delete
-find $BACKUP_PATH_SQL/backup-weekly* -mtime +$RETENTION -type f -delete
+find \$BACKUP_PATH_FILES/backup-weekly* -mtime +\$RETENTION -type f -delete
+find \$BACKUP_PATH_SQL/backup-weekly* -mtime +\$RETENTION -type f -delete
 
 
 
