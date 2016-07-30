@@ -161,7 +161,7 @@ echo
 echo
 echo -e "${lyellow}CHANGING HOSTNAME"
 echo -e -n "${white}Modifying /etc/hostname...${nc}"
-echo "$HOSTNAME" >> /etc/hostname
+echo "$HOSTNAME" > /etc/hostname
 echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
 sleep 1
