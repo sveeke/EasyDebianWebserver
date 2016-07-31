@@ -26,7 +26,7 @@ If you have any questions, suggestions or comments, let me know!
 2. Change directory to /tmp or another folder to you liking.  
    ```cd /tmp```
 3. Download the file with git, direct link (example below) or copy and paste the content from github over in your text editor.  
-   ```wget https://raw.githubusercontent.com/sveeke/easydebianwebserver/master/EasyDebianWebserver.sh```
+   ```wget https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/EasyDebianWebserver.sh```
 5. Give proper permissions to the script.  
    ```chmod 700 EasyDebianWebserver.sh```
 6. Execute the script and follow the instructions in it.  
