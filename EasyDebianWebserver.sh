@@ -367,7 +367,7 @@ RETENTION='14' # Backup retention in number of days
 umask 007
 
 ## Backup folders
-tar -cpzf \$BACKUP_PATH_FILES/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
+tar -cpzf \$BACKUP_PATH_FILES/backup-daily-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
 
 ## Backup MySQL databases
 # Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
@@ -375,7 +375,7 @@ service apache2 stop
 sleep 10
 service mysql stop
 sleep 5
-tar -cpzf \$BACKUP_PATH_SQL/backup-daily-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
+tar -cpzf \$BACKUP_PATH_SQL/backup-daily-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
 service mysql start
 sleep 5
 service apache2 start
@@ -413,7 +413,7 @@ RETENTION='180' # Backup retention in number of days
 umask 007
 
 ## Backup folders
-tar -cpzf \$BACKUP_PATH_FILES/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
+tar -cpzf \$BACKUP_PATH_FILES/backup-weekly-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
 
 ## Backup MySQL databases
 # Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
@@ -421,7 +421,7 @@ service apache2 stop
 sleep 10
 service mysql stop
 sleep 5
-tar -cpzf \$BACKUP_PATH_SQL/backup-weekly-$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
+tar -cpzf \$BACKUP_PATH_SQL/backup-weekly-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
 service mysql start
 sleep 5
 service apache2 start
