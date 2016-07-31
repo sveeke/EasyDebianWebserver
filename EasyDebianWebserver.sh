@@ -456,7 +456,7 @@ echo -e -n "${white}Setting folder and file permissions...${nc}"
 
 echo -e -n "${white}Adding cronjob for backup script...${nc}"
 (crontab -l 2>/dev/null; echo "# This cronjob activates the backup_daily.sh script every day at 4:00.
-0 4 * * 1-6 /home/$USER/backup/script/backup_daily.sh
+0 4 * * 1-6 /home/$USER/backup/script/backup-daily.sh
 
 # This cronjob activates the backup-weekly.sh script every week on sunday at 4:00.
 0 4 * * 0 /home/$USER/backup/script/backup-weekly.sh") | crontab -
