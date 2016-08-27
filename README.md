@@ -36,7 +36,7 @@ If you have any questions, suggestions or comments, let me know!
 Check the [wiki](https://github.com/sveeke/EasyDebianWebserver/wiki) if you have questions or need help. If you still have questions you can post them at [Issues](https://github.com/sveeke/EasyDebianWebserver/issues)'.
 
 ## Plans for the future
-I would like to incorporate some extra hardening like the Inversoft's hardening [guide](https://www.inversoft.com/guides/2016-guide-to-user-data-security). A lot of it is already in the script, but there are still some usefull improvements to be made. This means adding things like:
+I would like to incorporate some extra hardening like the Inversoft's hardening [guide](https://www.inversoft.com/guides/2016-guide-to-user-data-security). Some of it is already in the script, but there are still some usefull improvements to be made. This means adding things like:
 
 - libpam-cracklib for strong passwords
 - google authenticator for 2FA
