@@ -216,7 +216,7 @@ echo -e "${white}The following software will be installed:
 - apt-transport-https           For using apt with https
 - unattended-upgrades           For automatically upgrading Debian with security updates
 - ntp                           Network Time Protocol                      
-- ufw                           This is an easy to use firewall frontend voor iptables
+- ufw                           This is an easy to use firewall frontend for iptables
 - sudo                          Allows the user to execute commands as root
 - zip                           For making zip archives
 - unzip                         For extracting zip archives
