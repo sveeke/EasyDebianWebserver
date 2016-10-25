@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# Version 1.1
+#############################################################################
+# Version 1.1 (in progress)
+#############################################################################
 
+#############################################################################
 # Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
 # Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
+#############################################################################
 
-###############################################################################
+#############################################################################
 # VARIABLES
-###############################################################################
+#############################################################################
 
 # COLOURS AND MARKUP
-
 red='\033[0;31m'            # Red
 green='\033[0;49;92m'       # Green
 yellow='\033[0;49;93m'      # Yellow
@@ -19,18 +22,18 @@ white='\033[1;37m'          # White
 grey='\033[1;49;30m'        # Grey
 nc='\033[0m'                # No color
 
-###############################################################################
+#############################################################################
 # SYSTEM
-###############################################################################
+#############################################################################
 
 # https://lobste.rs/c/4lfcnm (danielrheath)
 #set -e # stop the script on errors
 #set -u # unset variables are an error
 #set -o pipefail # piping a failed process into a successful one is an arror
 
-###############################################################################
+#############################################################################
 # LICENSE AND INTRODUCTION
-###############################################################################
+#############################################################################
 
 clear
 echo
@@ -55,15 +58,18 @@ echo -e "${yellow}
 # > e-mail      mail@sebasveeke.nl                                          #
 # > GitHub      sveeke                                                      #
 #############################################################################${nc}"
+
 echo
 echo -e "${white}This script will install and configure a webserver on your Debian 8 server.${nc}"
 echo
 echo -e "${white}Starting install script in 5 seconds. Press ${green}ctrl + c ${white}to abort.${nc}"
+
 sleep 5
 
-###############################################################################
+
+#############################################################################
 # TESTING REQUIREMENTS
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -117,11 +123,13 @@ This script needs a functioning internet connection. Please connect to the inter
         echo
         exit
 fi
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # USER CONFIGURATION
-###############################################################################
+#############################################################################
 
 # USER INPUT
 echo
@@ -151,11 +159,13 @@ echo
 echo -e "${white}*****************************************************************************
        Please note that some more user interaction is required later on
 *****************************************************************************${nc}"
+
 sleep 5
 
-###############################################################################
+
+#############################################################################
 # CHANGE HOSTNAME
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -163,11 +173,13 @@ echo -e "${yellow}CHANGING HOSTNAME"
 echo -e -n "${white}Modifying /etc/hostname...${nc}"
 echo "$HOSTNAME" > /etc/hostname
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # REPLACE REPOSITORIES
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -189,11 +201,13 @@ deb-src http://security.debian.org/ jessie/updates main contrib
 deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list
 
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # UPDATE OPERATING SYSTEM
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -207,11 +221,13 @@ echo
 # Upgrade operating system with new package list
 echo -e "${white}Downloading and installing new packages...${grey}"
         apt-get -y upgrade
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # INSTALL NEW SOFTWARE
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -249,9 +265,12 @@ apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzi
 # Install packages from jessie-backports repository
 apt-get -y install python-certbot-apache -t jessie-backports
 
-###############################################################################
+sleep 1
+
+
+#############################################################################
 # SETTING UP USER ACOUNT AND SSH
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -289,11 +308,13 @@ echo -e -n "${white}Adding user account to sudoers file...${nc}"
     # User privilege specification
     $USER   ALL=(ALL:ALL) ALL" >> /etc/sudoers
     echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # CONFIGURE FIREWALL
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -321,11 +342,13 @@ echo -e -n "${white}Activating firewall on next boot...${green}"
 	sed -i.bak 's/ENABLED=no/ENABLED=yes/g' /etc/ufw/ufw.conf
     chmod 0644 /etc/ufw/ufw.conf
     echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # CONFIGURE UNATTENDED-UPGRADES
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -333,11 +356,13 @@ echo -e "${yellow}CONFIGURING UNATTENDED-UPGRADES"
 echo -e -n "${white}Activating unattended-upgrades...${nc}"
 echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
 echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # CONFIGURE WEBSERVER
-###############################################################################
+#############################################################################
 
 echo
 echo
@@ -354,15 +379,19 @@ echo
 echo -e -n "${white}Restarting webserver...${grey}"
         service apache2 restart
     echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
 sleep 1
 
-###############################################################################
+
+#############################################################################
 # CREATE AUTOMATIC BACKUP
-###############################################################################
+#############################################################################
 
 echo
 echo
 echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
+
+# Creating backup folders within the given user account's home directory
 echo -e -n "${white}Creating backup folders...${nc}"
         mkdir /home/$USER/backup
         mkdir /home/$USER/backup/script
@@ -370,6 +399,7 @@ echo -e -n "${white}Creating backup folders...${nc}"
         mkdir /home/$USER/backup/databases
     echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
+# Adding backupscripts to folders
 echo -e -n "${white}Creating backup script...${nc}"
 
 echo -e "
@@ -465,6 +495,7 @@ find \$BACKUP_PATH_SQL/backup-weekly* -mtime +\$RETENTION -type f -delete
 ### Note: to restore backups use 'tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup'" > /home/$USER/backup/script/backup-weekly.sh
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
+# Setting folder and file permissions correctly
 echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:root /home/$USER/backup
         chown $USER:root /home/$USER/backup/script
@@ -480,6 +511,7 @@ echo -e -n "${white}Setting folder and file permissions...${nc}"
         chmod 770 /home/$USER/backup/script/backup-weekly.sh
     echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
+# Add cronjobs for backup scripts
 echo -e -n "${white}Adding cronjob for backup script...${nc}"
 (crontab -l 2>/dev/null; echo "# This cronjob activates the backup_daily.sh script every day at 4:00.
 0 4 * * 1-6 /home/$USER/backup/script/backup-daily.sh
@@ -490,9 +522,10 @@ echo -e -n "${white}Adding cronjob for backup script...${nc}"
 
 sleep 1
 
+#############################################################################
+# NOTES
+#############################################################################
 
-
-## NOTES
 echo
 echo
 echo
