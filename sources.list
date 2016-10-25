@@ -11,4 +11,4 @@ deb-src http://security.debian.org/ jessie/updates main contrib
 # Backport repositories
 deb http://ftp.debian.org/debian jessie-backports main
 
-echo \$TEST
+find \$TEST/backup-daily*
