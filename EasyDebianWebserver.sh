@@ -1,10 +1,16 @@
 #!/bin/bash
+
+# Version 1.1
+
 # Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
 # Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
 
+###############################################################################
+# VARIABLES
+###############################################################################
 
-## Colours & markup
+# COLOURS AND MARKUP
 
 red='\033[0;31m'            # Red
 lred='\033[1;31m'           # Light red
@@ -20,16 +26,19 @@ white='\033[1;37m'          # White
 grey='\033[1;49;30m'        # Grey
 nc='\033[0m'                # No color
 
-
-
-## BEGINNING SCRIPT
+###############################################################################
+# SYSTEM
+###############################################################################
 
 # https://lobste.rs/c/4lfcnm (danielrheath)
 #set -e # stop the script on errors
 #set -u # unset variables are an error
 #set -o pipefail # piping a failed process into a successful one is an arror
 
-# License and introduction
+###############################################################################
+# LICENSE AND INTRODUCTION
+###############################################################################
+
 clear
 echo
 echo -e "${lyellow}
@@ -57,19 +66,18 @@ echo
 echo -e "${white}This script will install and configure a webserver on your Debian 8 server.${nc}"
 echo
 echo -e "${white}Starting install script in 5 seconds. Press ${lgreen}ctrl + c ${white}to abort.${nc}"
-
 sleep 5
 
+###############################################################################
+# TESTING REQUIREMENTS
+###############################################################################
 
-
-## REQUIREMENTS
 echo
 echo
 echo -e "${lyellow}CHECKING REQUIREMENTS"
 
-# Check if script runs as root
+# Checking if script runs as root
 echo -e -n "${white}Script is running as root..."
-
 if [ "$EUID" -ne 0 ]; then
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
@@ -79,10 +87,9 @@ This script should be run as root. Use su root and run the script again.
         echo
         exit
 fi
-
 echo -e "\t\t\t\t\t${white}[${lgreen}YES${white}]${nc}"
 
-# Check if OS is Debian 8
+# Checking if OS is Debian 8
 echo -e -n "${white}Checking version of Debian...${nc}"
 
 VER=$(cat /etc/debian_version)
@@ -101,7 +108,6 @@ Please install Debian 8 Jessie first.
         echo
         exit
 fi
-
 echo -e "\t\t\t\t\t${white}[${lgreen}OK${white}]${nc}"
 
 # Checking internet connection
@@ -118,12 +124,13 @@ This script needs a functioning internet connection. Please connect to the inter
         echo
         exit
 fi
-
 sleep 1
 
+###############################################################################
+# USER CONFIGURATION
+###############################################################################
 
-
-## USER CONFIGURATION ##
+# USER INPUT
 echo
 echo -e "${lyellow}USER INPUT"
 echo -e "${white}The script will gather some information from you.${nc}"
@@ -151,24 +158,24 @@ echo
 echo -e "${white}*****************************************************************************
        Please note that some more user interaction is required later on
 *****************************************************************************${nc}"
-
 sleep 5
 
+###############################################################################
+# CHANGE HOSTNAME
+###############################################################################
 
-
-## CHANGING HOSTNAME
 echo
 echo
 echo -e "${lyellow}CHANGING HOSTNAME"
 echo -e -n "${white}Modifying /etc/hostname...${nc}"
 echo "$HOSTNAME" > /etc/hostname
 echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 sleep 1
 
+###############################################################################
+# REPLACE REPOSITORIES
+###############################################################################
 
-
-## REPLACE REPOSITORIES
 echo
 echo
 echo -e "${lyellow}REPLACING REPOSITORIES"
@@ -189,25 +196,30 @@ deb-src http://security.debian.org/ jessie/updates main contrib
 deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list
 
 echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 sleep 1
 
-## UPDATE OPERATING SYSTEM
+###############################################################################
+# UPDATE OPERATING SYSTEM
+###############################################################################
+
 echo
 echo
+
+# Update the package list from the Debian repositories
 echo -e "${lyellow}UPDATING OPERATING SYSTEM"
 echo -e "${white}Downloading package list from repositories... ${grey}"
        	apt-get update
 echo
 
+# Upgrade operating system with new package list
 echo -e "${white}Downloading and installing new packages...${grey}"
         apt-get -y upgrade
-
 sleep 1
 
+###############################################################################
+# INSTALL NEW SOFTWARE
+###############################################################################
 
-
-## INSTALLING NEW SOFTWARE
 echo
 echo
 echo -e "${lyellow}INSTALLING SOFTWARE"
@@ -231,37 +243,46 @@ echo -e "${white}The following software will be installed:
 - libapache2-mod-php5           Integrated php in the apache webserver
 - python-certbot-apache         The official Let's Encrypt client
 
-
 Note: user interaction required when installing MySQL/MariaDB!
 
-Starting in 10 seconds.${grey}"
+Starting in 10 seconds...${grey}"
 sleep 10
 echo
 echo
+
+# Install packages from normal Debian packages
 apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd libapache2-mod-php5
+
+# Install packages from jessie-backports repository
 apt-get -y install python-certbot-apache -t jessie-backports
 
+###############################################################################
+# SETTING UP USER ACOUNT AND SSH
+###############################################################################
 
-
-## Accounts & SSH
 echo
 echo
 
+# Hashing the password
 HASH=$(openssl passwd -1 -salt temp $PASS)
 
+# Create the user account with chosen password and its own home directory
 echo -e "${lyellow}USER ACCOUNT"
 echo -e -n "${white}Creating user account...${nc}"
         useradd $USER -s /bin/bash -m -U -p $HASH
     echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
+# Create SSH folder
 echo -e -n "${white}Creating SSH folder...${nc}"
         mkdir /home/$USER/.ssh
     echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
+# Add public SSH key to authorized_keys file
 echo -e -n "${white}Adding public key...${nc}"
     echo "$SSH" > /home/$USER/.ssh/authorized_keys
     echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
+# Set folder and file permissions correctly
 echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:$USER /home/$USER/.ssh
         chown $USER:$USER /home/$USER/.ssh/authorized_keys
@@ -269,71 +290,83 @@ echo -e -n "${white}Setting folder and file permissions...${nc}"
         chmod 600 /home/$USER/.ssh/authorized_keys
     echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
 
+# Add new user account to sudoers file
 echo -e -n "${white}Adding user account to sudoers file...${nc}"
     echo "
     # User privilege specification
     $USER   ALL=(ALL:ALL) ALL" >> /etc/sudoers
     echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 sleep 1
 
+###############################################################################
+# CONFIGURE FIREWALL
+###############################################################################
 
-
-## CONFIGURING FIREWALL
 echo
 echo
 echo -e "${lyellow}CONFIGURING FIREWALL"
+
+# Deny incoming traffic by default
 echo -e "${white}Configuring firewall for incoming traffic...${grey}"
         ufw default deny incoming
 echo
+
+# Allow ssh (22), http (80) and http (443) traffic through the firewall
 echo -e "${white}Configuring firewall for ssh, http and https traffic...${grey}"
         ufw allow ssh
         ufw allow http
         ufw allow https
 echo
+
+# Make logging more usefull on UFW
 echo -e "${white}Activating logging...${grey}"
         ufw logging on
 echo
+
+# UFW isn't activated by default, this activates it
 echo -e -n "${white}Activating firewall on next boot...${lgreen}"
 	sed -i.bak 's/ENABLED=no/ENABLED=yes/g' /etc/ufw/ufw.conf
     chmod 0644 /etc/ufw/ufw.conf
     echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 sleep 1
 
+###############################################################################
+# CONFIGURE UNATTENDED-UPGRADES
+###############################################################################
 
-
-## CONFIGURING UNATTENDED-UPGRADES
 echo
 echo
 echo -e "${lyellow}CONFIGURING UNATTENDED-UPGRADES"
 echo -e -n "${white}Activating unattended-upgrades...${nc}"
 echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
 echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 sleep 1
 
+###############################################################################
+# CONFIGURE WEBSERVER
+###############################################################################
 
-
-## CONFIGURING WEBSERVER
 echo
 echo
 echo -e "${lyellow}CONFIGURING WEBSERVER"
+
+# Activate relevant apache2 modules
 echo -e "${white}Activating apache2 modules...${grey}"
         a2enmod rewrite
         a2enmod actions
         a2enmod ssl
 echo
 
+# Restart webserver so changes can take effect
 echo -e -n "${white}Restarting webserver...${grey}"
         service apache2 restart
     echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
-
 sleep 1
 
+###############################################################################
+# CREATE AUTOMATIC BACKUP
+###############################################################################
 
-
-## BACKUP
 echo
 echo
 echo -e "${lyellow}CONFIGURING AUTOMATIC BACKUP"
