@@ -13,15 +13,8 @@
 # COLOURS AND MARKUP
 
 red='\033[0;31m'            # Red
-lred='\033[1;31m'           # Light red
-purple='\033[1;35m'         # Purple
-lpurple='\033[0;49;95m'     # Light purple
-green='\033[0;32m'          # Green
-lgreen='\033[0;49;92m'      # Light lgreen
-yellow='\033[1;33m'         # Yellow
-lyellow='\033[0;49;93m'     # Light yellow
-orange='\033[0;33m'         # Orange
-blue='\033[1;36m'           # Blue
+green='\033[0;49;92m'       # Green
+yellow='\033[0;49;93m'      # Yellow
 white='\033[1;37m'          # White
 grey='\033[1;49;30m'        # Grey
 nc='\033[0m'                # No color
@@ -41,7 +34,7 @@ nc='\033[0m'                # No color
 
 clear
 echo
-echo -e "${lyellow}
+echo -e "${yellow}
 #############################################################################
 # Copyright 2016 Sebas Veeke                                                #
 #                                                                           #
@@ -65,7 +58,7 @@ echo -e "${lyellow}
 echo
 echo -e "${white}This script will install and configure a webserver on your Debian 8 server.${nc}"
 echo
-echo -e "${white}Starting install script in 5 seconds. Press ${lgreen}ctrl + c ${white}to abort.${nc}"
+echo -e "${white}Starting install script in 5 seconds. Press ${green}ctrl + c ${white}to abort.${nc}"
 sleep 5
 
 ###############################################################################
@@ -74,7 +67,7 @@ sleep 5
 
 echo
 echo
-echo -e "${lyellow}CHECKING REQUIREMENTS"
+echo -e "${yellow}CHECKING REQUIREMENTS"
 
 # Checking if script runs as root
 echo -e -n "${white}Script is running as root..."
@@ -87,7 +80,7 @@ This script should be run as root. Use su root and run the script again.
         echo
         exit
 fi
-echo -e "\t\t\t\t\t${white}[${lgreen}YES${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
 # Checking if OS is Debian 8
 echo -e -n "${white}Checking version of Debian...${nc}"
@@ -108,13 +101,13 @@ Please install Debian 8 Jessie first.
         echo
         exit
 fi
-echo -e "\t\t\t\t\t${white}[${lgreen}OK${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}OK${white}]${nc}"
 
 # Checking internet connection
 echo -e -n "${white}Checking internet connection...${nc}"
 wget -q --tries=10 --timeout=20 --spider www.google.com
 if [[ $? -eq 0 ]]; then
-        echo -e "\t\t\t\t\t${white}[${lgreen}YES${white}]${nc}"
+        echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
     else
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
@@ -132,12 +125,12 @@ sleep 1
 
 # USER INPUT
 echo
-echo -e "${lyellow}USER INPUT"
+echo -e "${yellow}USER INPUT"
 echo -e "${white}The script will gather some information from you.${nc}"
 echo
-read -p "$(echo -e "${white}Enter the server's hostname: "${lgreen})" HOSTNAME
+read -p "$(echo -e "${white}Enter the server's hostname: "${green})" HOSTNAME
 echo
-read -p "$(echo -e "${white}Enter your username: "${lgreen})" USER
+read -p "$(echo -e "${white}Enter your username: "${green})" USER
 while true
 	do
 		read -s -p "$(echo -e "${white}Enter your password: ${nc}")" PASS
@@ -153,7 +146,7 @@ while true
 	done
 echo
 echo
-read -p "$(echo -e "${white}Enter your AuthorizedKeysFile: "${lgreen})" SSH
+read -p "$(echo -e "${white}Enter your AuthorizedKeysFile: "${green})" SSH
 echo
 echo -e "${white}*****************************************************************************
        Please note that some more user interaction is required later on
@@ -166,10 +159,10 @@ sleep 5
 
 echo
 echo
-echo -e "${lyellow}CHANGING HOSTNAME"
+echo -e "${yellow}CHANGING HOSTNAME"
 echo -e -n "${white}Modifying /etc/hostname...${nc}"
 echo "$HOSTNAME" > /etc/hostname
-echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 sleep 1
 
 ###############################################################################
@@ -178,7 +171,7 @@ sleep 1
 
 echo
 echo
-echo -e "${lyellow}REPLACING REPOSITORIES"
+echo -e "${yellow}REPLACING REPOSITORIES"
 echo -e -n "${white}Modifying sources.list...${nc}"
 
 echo "
@@ -195,7 +188,7 @@ deb-src http://security.debian.org/ jessie/updates main contrib
 # Backport repositories
 deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list
 
-echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 sleep 1
 
 ###############################################################################
@@ -206,7 +199,7 @@ echo
 echo
 
 # Update the package list from the Debian repositories
-echo -e "${lyellow}UPDATING OPERATING SYSTEM"
+echo -e "${yellow}UPDATING OPERATING SYSTEM"
 echo -e "${white}Downloading package list from repositories... ${grey}"
        	apt-get update
 echo
@@ -222,7 +215,7 @@ sleep 1
 
 echo
 echo
-echo -e "${lyellow}INSTALLING SOFTWARE"
+echo -e "${yellow}INSTALLING SOFTWARE"
 echo -e "${white}The following software will be installed:
 
 - apt-transport-https           For using apt with https
@@ -267,20 +260,20 @@ echo
 HASH=$(openssl passwd -1 -salt temp $PASS)
 
 # Create the user account with chosen password and its own home directory
-echo -e "${lyellow}USER ACCOUNT"
+echo -e "${yellow}USER ACCOUNT"
 echo -e -n "${white}Creating user account...${nc}"
         useradd $USER -s /bin/bash -m -U -p $HASH
-    echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Create SSH folder
 echo -e -n "${white}Creating SSH folder...${nc}"
         mkdir /home/$USER/.ssh
-    echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Add public SSH key to authorized_keys file
 echo -e -n "${white}Adding public key...${nc}"
     echo "$SSH" > /home/$USER/.ssh/authorized_keys
-    echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Set folder and file permissions correctly
 echo -e -n "${white}Setting folder and file permissions...${nc}"
@@ -288,14 +281,14 @@ echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:$USER /home/$USER/.ssh/authorized_keys
         chmod 700 /home/$USER/.ssh
         chmod 600 /home/$USER/.ssh/authorized_keys
-    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Add new user account to sudoers file
 echo -e -n "${white}Adding user account to sudoers file...${nc}"
     echo "
     # User privilege specification
     $USER   ALL=(ALL:ALL) ALL" >> /etc/sudoers
-    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 sleep 1
 
 ###############################################################################
@@ -304,7 +297,7 @@ sleep 1
 
 echo
 echo
-echo -e "${lyellow}CONFIGURING FIREWALL"
+echo -e "${yellow}CONFIGURING FIREWALL"
 
 # Deny incoming traffic by default
 echo -e "${white}Configuring firewall for incoming traffic...${grey}"
@@ -324,10 +317,10 @@ echo -e "${white}Activating logging...${grey}"
 echo
 
 # UFW isn't activated by default, this activates it
-echo -e -n "${white}Activating firewall on next boot...${lgreen}"
+echo -e -n "${white}Activating firewall on next boot...${green}"
 	sed -i.bak 's/ENABLED=no/ENABLED=yes/g' /etc/ufw/ufw.conf
     chmod 0644 /etc/ufw/ufw.conf
-    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 sleep 1
 
 ###############################################################################
@@ -336,10 +329,10 @@ sleep 1
 
 echo
 echo
-echo -e "${lyellow}CONFIGURING UNATTENDED-UPGRADES"
+echo -e "${yellow}CONFIGURING UNATTENDED-UPGRADES"
 echo -e -n "${white}Activating unattended-upgrades...${nc}"
 echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
-echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 sleep 1
 
 ###############################################################################
@@ -348,7 +341,7 @@ sleep 1
 
 echo
 echo
-echo -e "${lyellow}CONFIGURING WEBSERVER"
+echo -e "${yellow}CONFIGURING WEBSERVER"
 
 # Activate relevant apache2 modules
 echo -e "${white}Activating apache2 modules...${grey}"
@@ -360,7 +353,7 @@ echo
 # Restart webserver so changes can take effect
 echo -e -n "${white}Restarting webserver...${grey}"
         service apache2 restart
-    echo -e "\t\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 sleep 1
 
 ###############################################################################
@@ -369,13 +362,13 @@ sleep 1
 
 echo
 echo
-echo -e "${lyellow}CONFIGURING AUTOMATIC BACKUP"
+echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
 echo -e -n "${white}Creating backup folders...${nc}"
         mkdir /home/$USER/backup
         mkdir /home/$USER/backup/script
         mkdir /home/$USER/backup/files
         mkdir /home/$USER/backup/databases
-    echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Creating backup script...${nc}"
 
@@ -470,7 +463,7 @@ find \$BACKUP_PATH_SQL/backup-weekly* -mtime +\$RETENTION -type f -delete
 
 
 ### Note: to restore backups use 'tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup'" > /home/$USER/backup/script/backup-weekly.sh
-echo -e "\t\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:root /home/$USER/backup
@@ -485,7 +478,7 @@ echo -e -n "${white}Setting folder and file permissions...${nc}"
         chmod 770 /home/$USER/backup/databases
         chmod 770 /home/$USER/backup/script/backup-daily.sh
         chmod 770 /home/$USER/backup/script/backup-weekly.sh
-    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Adding cronjob for backup script...${nc}"
 (crontab -l 2>/dev/null; echo "# This cronjob activates the backup_daily.sh script every day at 4:00.
@@ -493,7 +486,7 @@ echo -e -n "${white}Adding cronjob for backup script...${nc}"
 
 # This cronjob activates the backup-weekly.sh script every week on sunday at 4:00.
 0 4 * * 0 /home/$USER/backup/script/backup-weekly.sh") | crontab -
-    echo -e "\t\t\t\t${white}[${lgreen}DONE${white}]${nc}"
+    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -506,7 +499,7 @@ echo
 echo
 echo -e "${white}
 ******************************************************************************************************
-                                            ${lyellow}IMPORTANT!${white}
+                                            ${yellow}IMPORTANT!${white}
 ******************************************************************************************************
 
 Although you now have a fully functional Debian based webserver, you still need to do a few things 
