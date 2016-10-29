@@ -7,7 +7,7 @@
 #############################################################################
 # This hardened sshd_config file improves the overall security of sshd and
 # can be used in place of the default one that is provided by the sshd 
-# package. More information about sshd_config can be found in the sshd_config manpage.
+# package. More information about sshd_config can be found in the manpage.
 #############################################################################
 
 # The port and protocol sshd wil listen to.
@@ -23,11 +23,9 @@ HostKey /etc/ssh/ssh_host_ed25519_key
 # Privilege Separation is turned on for security.
 UsePrivilegeSeparation yes
 
-# Idle log out timeout interval
-ClientAliveInterval 600
+# Idle log out timeout interval (you will be logged out after 15 minutes of idle time).
+ClientAliveInterval 900
 ClientAliveCountMax 0
-
-
 
 # Lifetime and size of ephemeral version 1 server key
 KeyRegenerationInterval 3600
@@ -37,9 +35,9 @@ ServerKeyBits 1024
 SyslogFacility AUTH
 LogLevel INFO
 
-# Authentication:
-LoginGraceTime 120
-PermitRootLogin without-password
+# Authentication
+LoginGraceTime 60
+PermitRootLogin no
 StrictModes yes
 
 RSAAuthentication yes
