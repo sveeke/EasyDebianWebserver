@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-alpha.1
+# Version 1.1.0-alpha.2
 #############################################################################
 
 #############################################################################
@@ -157,7 +157,7 @@ echo
 read -p "$(echo -e "${white}Enter your AuthorizedKeysFile: "${green})" SSH
 echo
 echo -e "${white}*****************************************************************************
-       Please note that some more user interaction is required later on
+Please note that some more user interaction is required when installing MySQL
 *****************************************************************************${nc}"
 
 sleep 5
@@ -185,21 +185,7 @@ echo
 echo
 echo -e "${yellow}REPLACING REPOSITORIES"
 echo -e -n "${white}Modifying sources.list...${nc}"
-
-echo "
-# Standard repositories
-deb http://httpredir.debian.org/debian jessie main contrib
-deb-src http://httpredir.debian.org/debian jessie main contrib
-deb http://httpredir.debian.org/debian jessie-updates main contrib
-deb-src http://httpredir.debian.org/debian jessie-updates main contrib
-
-# Security repositories
-deb http://security.debian.org/ jessie/updates main contrib
-deb-src http://security.debian.org/ jessie/updates main contrib
-
-# Backport repositories
-deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list
-
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/sources.list -O /etc/apt/sources.list
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
@@ -215,12 +201,12 @@ echo
 # Update the package list from the Debian repositories
 echo -e "${yellow}UPDATING OPERATING SYSTEM"
 echo -e "${white}Downloading package list from repositories... ${grey}"
-       	apt-get update
+apt-get update
 echo
 
 # Upgrade operating system with new package list
 echo -e "${white}Downloading and installing new packages...${grey}"
-        apt-get -y upgrade
+apt-get -y upgrade
 
 sleep 1
 
@@ -394,105 +380,21 @@ echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
 # Creating backup folders within the given user account's home directory
 echo -e -n "${white}Creating backup folders...${nc}"
         mkdir /home/$USER/backup
-        mkdir /home/$USER/backup/script
+        mkdir /home/$USER/backup/scripts
         mkdir /home/$USER/backup/files
         mkdir /home/$USER/backup/databases
     echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Adding backupscripts to folders
 echo -e -n "${white}Creating backup script...${nc}"
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/backup-daily.sh -O /home/$USER/backup/scripts/backup-daily.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/backup-weekly.sh -O /home/$USER/backup/scripts/backup-weekly.sh
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-echo -e "
-#!/bin/bash
-# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
-# See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
-# Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
-
-### This script will backup folders and MySQL databases. You can modify it to include more folders or change the backup retention. If you want to change the time or frequency you should use crontab -e.
-
-## USER VARIABLES
-BACKUP_PATH_FILES='/home/$USER/backup/files'
-BACKUP_PATH_SQL='/home/$USER/backup/databases'
-BACKUP_FOLDERS='/var/www/html/. /etc/apache2 /etc/ssl /etc/php5' # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
-BACKUP_SQL='/var/lib/mysql/.' # This is the default folder where databases are stored.
-RETENTION='14' # Backup retention in number of days
-
-
-
-## Set default file permissions
-umask 007
-
-## Backup folders
-tar -cpzf \$BACKUP_PATH_FILES/backup-daily-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
-
-## Backup MySQL databases
-# Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
-service apache2 stop
-sleep 10
-service mysql stop
-sleep 5
-tar -cpzf \$BACKUP_PATH_SQL/backup-daily-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
-service mysql start
-sleep 5
-service apache2 start
-
-## Set backup ownership
-chown $USER:root /home/$USER/backup/files/*
-chown $USER:root /home/$USER/backup/databases/*
-
-## Delete backups older than the RETENTION parameter
-find \$BACKUP_PATH_FILES/backup-daily* -mtime +\$RETENTION -type f -delete
-find \$BACKUP_PATH_SQL/backup-daily* -mtime +\$RETENTION -type f -delete
-
-
-
-### Note: to restore backups use 'tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup'" > /home/$USER/backup/script/backup-daily.sh
-
-echo "
-#!/bin/bash
-# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
-# See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
-# Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
-
-### This script will backup folders and MySQL databases. You can modify it to include more folders or change the backup retention. If you want to change the time or frequency you should use crontab -e.
-
-## USER VARIABLES
-BACKUP_PATH_FILES='/home/$USER/backup/files'
-BACKUP_PATH_SQL='/home/$USER/backup/databases'
-BACKUP_FOLDERS='/var/www/html/. /etc/apache2 /etc/ssl /etc/php5' # To add more folders, place the folder path you want to add between the quotation marks below. Make sure the folders are seperated with a space. If you also want to include hidden files, add '/.' to the location.
-BACKUP_SQL='/var/lib/mysql/.' # This is the default folder where databases are stored.
-RETENTION='180' # Backup retention in number of days
-
-
-
-## Set default file permissions
-umask 007
-
-## Backup folders
-tar -cpzf \$BACKUP_PATH_FILES/backup-weekly-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_FOLDERS
-
-## Backup MySQL databases
-# Note: in order to minimize the risk of getting inconsistencies because of pending transactions, apache2 and MySQL will be stopped temporary.
-service apache2 stop
-sleep 10
-service mysql stop
-sleep 5
-tar -cpzf \$BACKUP_PATH_SQL/backup-weekly-\$( date '+%Y-%m-%d_%H-%M-%S' ).tar.gz \$BACKUP_SQL
-service mysql start
-sleep 5
-service apache2 start
-
-## Set backup ownership
-chown $USER:root /home/$USER/backup/files/*
-chown $USER:root /home/$USER/backup/databases/*
-
-## Delete backups older than the RETENTION parameter
-find \$BACKUP_PATH_FILES/backup-weekly* -mtime +\$RETENTION -type f -delete
-find \$BACKUP_PATH_SQL/backup-weekly* -mtime +\$RETENTION -type f -delete
-
-
-
-### Note: to restore backups use 'tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup'" > /home/$USER/backup/script/backup-weekly.sh
+# Replacing '$USER' in script with $USER variable value
+echo -e -n "${white}Customizing backup script...${nc}"
+sed -i s/'$USER'/$USER/g /home/$USER/backup/scripts/backup-daily.sh
+sed -i s/'$USER'/$USER/g /home/$USER/backup/scripts/backup-weekly.sh
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions correctly
