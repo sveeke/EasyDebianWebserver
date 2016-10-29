@@ -400,26 +400,26 @@ echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 # Setting folder and file permissions correctly
 echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:root /home/$USER/backup
-        chown $USER:root /home/$USER/backup/script
+        chown $USER:root /home/$USER/backup/scripts
         chown $USER:root /home/$USER/backup/files
         chown $USER:root /home/$USER/backup/databases
-        chown $USER:root /home/$USER/backup/script/backup-daily.sh
-        chown $USER:root /home/$USER/backup/script/backup-weekly.sh
+        chown $USER:root /home/$USER/backup/scripts/backup-daily.sh
+        chown $USER:root /home/$USER/backup/scripts/backup-weekly.sh
         chmod 770 /home/$USER/backup
-        chmod 770 /home/$USER/backup/script
+        chmod 770 /home/$USER/backup/scripts
         chmod 770 /home/$USER/backup/files
         chmod 770 /home/$USER/backup/databases
-        chmod 770 /home/$USER/backup/script/backup-daily.sh
-        chmod 770 /home/$USER/backup/script/backup-weekly.sh
+        chmod 770 /home/$USER/backup/scripts/backup-daily.sh
+        chmod 770 /home/$USER/backup/scripts/backup-weekly.sh
     echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Add cronjobs for backup scripts
 echo -e -n "${white}Adding cronjob for backup script...${nc}"
 (crontab -l 2>/dev/null; echo "# This cronjob activates the backup_daily.sh script every day at 4:00.
-0 4 * * 1-6 /home/$USER/backup/script/backup-daily.sh
+0 4 * * 1-6 /home/$USER/backup/scripts/backup-daily.sh
 
 # This cronjob activates the backup-weekly.sh script every week on sunday at 4:00.
-0 4 * * 0 /home/$USER/backup/script/backup-weekly.sh") | crontab -
+0 4 * * 0 /home/$USER/backup/scripts/backup-weekly.sh") | crontab -
     echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
