@@ -68,7 +68,7 @@ sleep 5
 
 
 #############################################################################
-# TESTING REQUIREMENTS
+# CHECKING REQUIREMENTS
 #############################################################################
 
 echo
@@ -90,18 +90,12 @@ echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
 # Checking if OS is Debian 8
 echo -e -n "${white}Checking version of Debian...${nc}"
-
-VER=$(cat /etc/debian_version)
-DEBVER=${VER:0:1}
-OS=$(cat /etc/issue)
-DIST=${OS::-6}
-RELEASE=$(head -n 1 /etc/*-release)
-
-if [[ $DEBVER != "8" ]]; then
+. /etc/*release
+if [[ $PRETTY_NAME != "Debian GNU/Linux 8 (jessie)" ]]; then
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
         echo -e "${red}**************************************************************************************************
-This script can only run on Debian 8, you are running $DIST. 
+This script can only run on Debian 8, you are running $PRETTY_NAME. 
 Please install Debian 8 Jessie first.
 **************************************************************************************************${nc}"
         echo
