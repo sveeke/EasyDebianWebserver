@@ -101,7 +101,7 @@ if [ -f /etc/debian_version ]; then
                 sleep 2
 		echo
 		
-        elif [ "$DEBVER" = "stretch" -o "$DEBVER" = "stretch" ]; then
+        elif [ "$DEBVER" = "9" -o "$DEBVER" = "stretch" ]; then
                 echo
 		echo -e "${green}Debian 9 "stretch" (or similar) has been found. Install script will continue.${nc}"
 		OS='9'
