@@ -60,7 +60,7 @@ echo -e "${yellow}
 #############################################################################${nc}"
 
 echo
-echo -e "${white}This script will install and configure a webserver on your Debian 8 server.${nc}"
+echo -e "${white}This script will install and configure a webserver on your Debian server.${nc}"
 echo
 echo -e "${white}Starting install script in 5 seconds. Press ${green}ctrl + c ${white}to abort.${nc}"
 
@@ -95,26 +95,28 @@ if [ -f /etc/debian_version ]; then
         DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
 
         if [ "$DEBVER" = "8" -o "$DEBVER" = "jessie" ]; then
-                echo 'Debian 8 "jessie" (or similar) has been found. Install script will continue.'
+		echo
+                echo -e "${green}Debian 8 "jessie" (or similar) has been found. Install script will continue.${nc}"
 		OS='8'
                 sleep 2
-
+		echo
+		
         elif [ "$DEBVER" = "stretch" -o "$DEBVER" = "stretch" ]; then
-                echo 'Debian 9 "stretch" (or similar) has been found. Install script will continue.'
+                echo
+		echo -e "${green}Debian 9 "stretch" (or similar) has been found. Install script will continue.${nc}"
 		OS='9'
                 sleep 2
-
+		echo
         else
                 echo
 		echo -e "${red}**************************************************************************************************
 This script will only work on Debian 8 (jessie) or Debian 9 (stretch).
 **************************************************************************************************${nc}"
+		echo
                 exit 1
 
         fi
 fi
-
-echo -e "\t\t\t\t\t${white}[${green}OK${white}]${nc}"
 
 # Checking internet connection
 echo -e -n "${white}Checking internet connection...${nc}"
