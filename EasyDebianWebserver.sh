@@ -77,44 +77,43 @@ echo -e "${yellow}CHECKING REQUIREMENTS"
 
 # Checking if script runs as root
 echo -e -n "${white}Script is running as root..."
-if [ "$EUID" -ne 0 ]; then
+	if [ "$EUID" -ne 0 ]; then
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
         echo -e "${red}************************************************************************
 This script should be run as root. Use su root and run the script again.
 ************************************************************************${nc}"
         echo
-        exit
-fi
+		exit
+	fi
 echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
 # Checking if OS is Debian 8 or 9
 echo -e "${white}Checking version of Debian...${nc}"
-
-if [ -f /etc/debian_version ]; then
-        DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
+	if [ -f /etc/debian_version ]; then
+		DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
 
         if [ "$DEBVER" = "8" -o "$DEBVER" = "jessie" ]; then
-		echo
-                echo -e "${green}Debian 8 "jessie" (or similar) has been found. Install script will continue.${nc}"
-		OS='8'
-                sleep 2
-		echo
+			echo
+			echo -e "${green}Debian 8 "jessie" (or similar) has been found. Install script will continue.${nc}"
+			OS='8'
+			sleep 2
+			echo
 		
-        elif [ "$DEBVER" = "9" -o "$DEBVER" = "stretch" ]; then
-                echo
-		echo -e "${green}Debian 9 "stretch" (or similar) has been found. Install script will continue.${nc}"
-		OS='9'
-                sleep 2
-		echo
-        else
-                echo
-		echo -e "${red}**************************************************************************************************
+		elif [ "$DEBVER" = "9" -o "$DEBVER" = "stretch" ]; then
+			echo
+			echo -e "${green}Debian 9 "stretch" (or similar) has been found. Install script will continue.${nc}"
+			OS='9'
+			sleep 2
+			echo
+        
+		else
+			echo
+			echo -e "${red}**************************************************************************************************
 This script will only work on Debian 8 (jessie) or Debian 9 (stretch).
 **************************************************************************************************${nc}"
-		echo
-                exit 1
-
+			echo
+			exit 1
         fi
 fi
 
@@ -144,26 +143,35 @@ sleep 1
 echo
 echo -e "${yellow}USER INPUT"
 echo -e "${white}The script will gather some information from you.${nc}"
+
+## Hostname
 echo
 read -p "$(echo -e "${white}Enter the server's hostname: "${green})" HOSTNAME
+
+## Username
 echo
 read -p "$(echo -e "${white}Enter your username: "${green})" USER
+
+## Password
 while true
 	do
 		read -s -p "$(echo -e "${white}Enter your password: ${nc}")" PASS
-        echo
+		echo
 		read -s -p "$(echo -e "${white}Enter your Password (again): ${nc}")" PASS2
-		[ "$PASS" = "$PASS2" ] && break
-        echo
-        echo
-        echo -e "${red}*********************************************"
-		echo -e "${red}Your passwords don´t match, please try again."
-        echo -e "${red}*********************************************"
-        echo
+			[ "$PASS" = "$PASS2" ] && break
+			echo
+			echo
+			echo -e "${red}*********************************************"
+			echo -e "${red}Your passwords don´t match, please try again."
+			echo -e "${red}*********************************************"
+        	echo
 	done
-echo
+
+## AuthorizedKeysFile
 echo
 read -p "$(echo -e "${white}Enter your AuthorizedKeysFile: "${green})" SSH
+
+## Notice
 echo
 echo -e "${white}*****************************************************************************
 Please note that some more user interaction is required when installing MySQL
@@ -194,8 +202,15 @@ echo
 echo
 echo -e "${yellow}REPLACING REPOSITORIES"
 echo -e -n "${white}Modifying sources.list...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/sources.list -O /etc/apt/sources.list
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+if [ "$OS" = "8" ]; then
+	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list
+	echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+elif [ "$OS" = "9" ]; then
+	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list
+	echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+fi
 
 sleep 1
 
@@ -241,24 +256,27 @@ echo -e "${white}The following software will be installed:
 - mariadb-server                The MySQL based database server
 - mariadb-client                The MySQL based database client 
 - apache2                       The Apache webserver
-- php5                          Popular hypertext preprocessor for dynamic content
-- php5-mysql                    PHP5 extention for interaction with mysql
-- php5-gd                       PHP5 extention for handling images from php
-- libapache2-mod-php5           Integrated php in the apache webserver
-- python-certbot-apache         The official Let's Encrypt client
+- php                          	Popular hypertext preprocessor for dynamic content
+- Some php extentions     	PHP extention for interaction with mysql, handling images etc.
+- libapache2-mod-php           	Integrate php in the apache webserver
+- python-certbot-apache		The official Let's Encrypt client
 
 Note: user interaction required when installing MySQL/MariaDB!
 
 Starting in 10 seconds...${grey}"
+
 sleep 10
 echo
 echo
 
 # Install packages from normal Debian packages
-apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd libapache2-mod-php5
+if [ "$OS" = "8" ]; then
+	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd libapache2-mod-php5
+	apt-get -y install python-certbot-apache -t jessie-backports
 
-# Install packages from jessie-backports repository
-apt-get -y install python-certbot-apache -t jessie-backports
+elif [ "$OS" = "9" ]; then
+	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd libapache2-mod-php7.0 python-certbot-apache
+fi
 
 sleep 1
 
@@ -396,8 +414,8 @@ echo -e -n "${white}Creating backup folders...${nc}"
 
 # Adding backupscripts to folders
 echo -e -n "${white}Creating backup script...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/backup-daily.sh -O /home/$USER/backup/scripts/backup-daily.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/backup-weekly.sh -O /home/$USER/backup/scripts/backup-weekly.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-daily.sh -O /home/$USER/backup/scripts/backup-daily.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-weekly.sh -O /home/$USER/backup/scripts/backup-weekly.sh
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Replacing '$USER' in script with $USER variable value
@@ -406,7 +424,7 @@ sed -i s/'$USER'/$USER/g /home/$USER/backup/scripts/backup-daily.sh
 sed -i s/'$USER'/$USER/g /home/$USER/backup/scripts/backup-weekly.sh
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-# Setting folder and file permissions correctly
+# Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
         chown $USER:root /home/$USER/backup
         chown $USER:root /home/$USER/backup/scripts
