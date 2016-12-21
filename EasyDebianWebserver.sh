@@ -88,23 +88,27 @@ This script should be run as root. Use su root and run the script again.
 fi
 echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
-# Checking if OS is Debian 8
-echo -e -n "${white}Checking version of Debian...${nc}"
+# Checking if OS is Debian 8 or 9
+echo -e "${white}Checking version of Debian...${nc}"
+
 if [ -f /etc/debian_version ]; then
         DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
 
         if [ "$DEBVER" = "8" -o "$DEBVER" = "jessie" ]; then
-                echo 'Debian 8 "jessie" (or similar) has been found. Install script will continue.'.
+                echo 'Debian 8 "jessie" (or similar) has been found. Install script will continue.'
+		OS='8'
                 sleep 2
 
         elif [ "$DEBVER" = "stretch" -o "$DEBVER" = "stretch" ]; then
-                echo 'Debian 9 "stretch" (or similar) has been found. Install script will continue.'.
+                echo 'Debian 9 "stretch" (or similar) has been found. Install script will continue.'
+		OS='9'
                 sleep 2
 
         else
-                echo '${red}**************************************************************************************************
-		You don't have Debian 8 (jessie) or Debian 9 (stretch).
-		**************************************************************************************************${nc}'
+                echo
+		echo -e "${red}**************************************************************************************************
+This script will only work on Debian 8 (jessie) or Debian 9 (stretch).
+**************************************************************************************************${nc}"
                 exit 1
 
         fi
