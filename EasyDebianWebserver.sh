@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-alpha.2
+# Version 1.1.0-alpha.3
 #############################################################################
 
 #############################################################################
@@ -90,17 +90,26 @@ echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
 # Checking if OS is Debian 8
 echo -e -n "${white}Checking version of Debian...${nc}"
-. /etc/*release
-if [[ $PRETTY_NAME != "Debian GNU/Linux 8 (jessie)" ]]; then
-        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
-        echo
-        echo -e "${red}**************************************************************************************************
-This script can only run on Debian 8, you are running $PRETTY_NAME. 
-Please install Debian 8 Jessie first.
-**************************************************************************************************${nc}"
-        echo
-        exit
+if [ -f /etc/debian_version ]; then
+        DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
+
+        if [ "$DEBVER" = "8" -o "$DEBVER" = "jessie" ]; then
+                echo 'Debian 8 "jessie" (or similar) has been found. Install script will continue.'.
+                sleep 2
+
+        elif [ "$DEBVER" = "stretch" -o "$DEBVER" = "stretch" ]; then
+                echo 'Debian 9 "stretch" (or similar) has been found. Install script will continue.'.
+                sleep 2
+
+        else
+                echo '${red}**************************************************************************************************
+		You don't have Debian 8 (jessie) or Debian 9 (stretch).
+		**************************************************************************************************${nc}'
+                exit 1
+
+        fi
 fi
+
 echo -e "\t\t\t\t\t${white}[${green}OK${white}]${nc}"
 
 # Checking internet connection
