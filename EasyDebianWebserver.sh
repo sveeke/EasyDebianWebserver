@@ -88,34 +88,31 @@ This script should be run as root. Use su root and run the script again.
 	fi
 echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
-# Checking if OS is Debian 8 or 9
-echo -e "${white}Checking version of Debian...${nc}"
+# Checking Debian version
+echo -e -n "${white}Checking version of Debian...${nc}"
 	if [ -f /etc/debian_version ]; then
 		DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
 
         if [ "$DEBVER" = "8" -o "$DEBVER" = "jessie" ]; then
-			echo
-			echo -e "${green}Debian 8 "jessie" (or similar) has been found. Install script will continue.${nc}"
+			echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 			OS='8'
 			sleep 2
-			echo
-		
+
 		elif [ "$DEBVER" = "9" -o "$DEBVER" = "stretch" ]; then
-			echo
-			echo -e "${green}Debian 9 "stretch" (or similar) has been found. Install script will continue.${nc}"
+			echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 			OS='9'
 			sleep 2
-			echo
-        
+
 		else
+			echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
 			echo
-			echo -e "${red}**************************************************************************************************
+			echo -e "${red}************************************************************************
 This script will only work on Debian 8 (jessie) or Debian 9 (stretch).
-**************************************************************************************************${nc}"
+************************************************************************${nc}"
 			echo
 			exit 1
         fi
-fi
+	fi
 
 # Checking internet connection
 echo -e -n "${white}Checking internet connection...${nc}"
@@ -150,27 +147,26 @@ read -p "$(echo -e "${white}Enter the server's hostname: "${green})" HOSTNAME
 
 ## Username
 echo
-read -p "$(echo -e "${white}Enter your username: "${green})" USER
+read -p "$(echo -e "${white}Enter the backup account username: "${green})" BACKUPUSER
 
 ## Password
 while true
 	do
-		read -s -p "$(echo -e "${white}Enter your password: ${nc}")" PASS
+		read -s -p "$(echo -e "${white}Enter the backup account password: ${nc}")" PASS
 		echo
-		read -s -p "$(echo -e "${white}Enter your Password (again): ${nc}")" PASS2
+		read -s -p "$(echo -e "${white}Enter the backup account Password (again): ${nc}")" PASS2
 			[ "$PASS" = "$PASS2" ] && break
 			echo
 			echo
 			echo -e "${red}*********************************************"
 			echo -e "${red}Your passwords don´t match, please try again."
 			echo -e "${red}*********************************************"
-        	echo
+        echo
 	done
 
-## AuthorizedKeysFile
-echo
-read -p "$(echo -e "${white}Enter your AuthorizedKeysFile: "${green})" SSH
+## Add user account
 
+	
 ## Notice
 echo
 echo -e "${white}*****************************************************************************
@@ -226,9 +222,9 @@ echo
 echo -e "${yellow}UPDATING OPERATING SYSTEM"
 echo -e "${white}Downloading package list from repositories... ${grey}"
 apt-get update
-echo
 
 # Upgrade operating system with new package list
+echo
 echo -e "${white}Downloading and installing new packages...${grey}"
 apt-get -y upgrade
 
@@ -257,9 +253,9 @@ echo -e "${white}The following software will be installed:
 - mariadb-client                The MySQL based database client 
 - apache2                       The Apache webserver
 - php                          	Popular hypertext preprocessor for dynamic content
-- Some php extentions     	PHP extention for interaction with mysql, handling images etc.
+- Some php extentions     		PHP extention for interaction with mysql, handling images etc.
 - libapache2-mod-php           	Integrate php in the apache webserver
-- python-certbot-apache		The official Let's Encrypt client
+- python-certbot-apache			The official Let's Encrypt client
 
 Note: user interaction required when installing MySQL/MariaDB!
 
@@ -269,11 +265,12 @@ sleep 10
 echo
 echo
 
-# Install packages from normal Debian packages
+# Install packages for Debian 8 Jessie
 if [ "$OS" = "8" ]; then
 	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd libapache2-mod-php5
 	apt-get -y install python-certbot-apache -t jessie-backports
 
+# Install packages for Debian 9 Stretch
 elif [ "$OS" = "9" ]; then
 	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd libapache2-mod-php7.0 python-certbot-apache
 fi
@@ -282,7 +279,7 @@ sleep 1
 
 
 #############################################################################
-# SETTING UP USER ACOUNT AND SSH
+# SETTING UP BACKUP ACCOUNT
 #############################################################################
 
 echo
@@ -294,33 +291,8 @@ HASH=$(openssl passwd -1 -salt temp $PASS)
 # Create the user account with chosen password and its own home directory
 echo -e "${yellow}USER ACCOUNT"
 echo -e -n "${white}Creating user account...${nc}"
-        useradd $USER -s /bin/bash -m -U -p $HASH
-    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
-# Create SSH folder
-echo -e -n "${white}Creating SSH folder...${nc}"
-        mkdir /home/$USER/.ssh
-    echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
-# Add public SSH key to authorized_keys file
-echo -e -n "${white}Adding public key...${nc}"
-    echo "$SSH" > /home/$USER/.ssh/authorized_keys
-    echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
-# Set folder and file permissions correctly
-echo -e -n "${white}Setting folder and file permissions...${nc}"
-        chown $USER:$USER /home/$USER/.ssh
-        chown $USER:$USER /home/$USER/.ssh/authorized_keys
-        chmod 700 /home/$USER/.ssh
-        chmod 600 /home/$USER/.ssh/authorized_keys
-    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
-# Add new user account to sudoers file
-echo -e -n "${white}Adding user account to sudoers file...${nc}"
-    echo "
-    # User privilege specification
-    $USER   ALL=(ALL:ALL) ALL" >> /etc/sudoers
-    echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+useradd $BACKUPUSER -s /bin/bash -m -U -p $HASH
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -406,10 +378,10 @@ echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
 
 # Creating backup folders within the given user account's home directory
 echo -e -n "${white}Creating backup folders...${nc}"
-        mkdir /home/$USER/backup
-        mkdir /home/$USER/backup/scripts
-        mkdir /home/$USER/backup/files
-        mkdir /home/$USER/backup/databases
+        mkdir /home/$BACKUPUSER/backup
+        mkdir /home/$BACKUPUSER/backup/scripts
+        mkdir /home/$BACKUPUSER/backup/files
+        mkdir /home/$BACKUPUSER/backup/databases
     echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Adding backupscripts to folders
@@ -420,24 +392,24 @@ echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Replacing '$USER' in script with $USER variable value
 echo -e -n "${white}Customizing backup script...${nc}"
-sed -i s/'$USER'/$USER/g /home/$USER/backup/scripts/backup-daily.sh
-sed -i s/'$USER'/$USER/g /home/$USER/backup/scripts/backup-weekly.sh
+sed -i s/'$USER'/$BACKUPUSER/g /home/$BACKUPUSER/backup/scripts/backup-daily.sh
+sed -i s/'$USER'/$BACKUPUSER/g /home/$BACKUPUSER/backup/scripts/backup-weekly.sh
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
-        chown $USER:root /home/$USER/backup
-        chown $USER:root /home/$USER/backup/scripts
-        chown $USER:root /home/$USER/backup/files
-        chown $USER:root /home/$USER/backup/databases
-        chown $USER:root /home/$USER/backup/scripts/backup-daily.sh
-        chown $USER:root /home/$USER/backup/scripts/backup-weekly.sh
-        chmod 770 /home/$USER/backup
-        chmod 770 /home/$USER/backup/scripts
-        chmod 770 /home/$USER/backup/files
-        chmod 770 /home/$USER/backup/databases
-        chmod 770 /home/$USER/backup/scripts/backup-daily.sh
-        chmod 770 /home/$USER/backup/scripts/backup-weekly.sh
+        chown $BACKUPUSER:root /home/$BACKUPUSER/backup
+        chown $BACKUPUSER:root /home/$BACKUPUSER/backup/scripts
+        chown $BACKUPUSER:root /home/$BACKUPUSER/backup/files
+        chown $BACKUPUSER:root /home/$BACKUPUSER/backup/databases
+        chown $BACKUPUSER:root /home/$BACKUPUSER/backup/scripts/backup-daily.sh
+        chown $BACKUPUSER:root /home/$BACKUPUSER/backup/scripts/backup-weekly.sh
+        chmod 770 /home/$BACKUPUSER/backup
+        chmod 770 /home/$BACKUPUSER/backup/scripts
+        chmod 770 /home/$BACKUPUSER/backup/files
+        chmod 770 /home/$BACKUPUSER/backup/databases
+        chmod 770 /home/$BACKUPUSER/backup/scripts/backup-daily.sh
+        chmod 770 /home/$BACKUPUSER/backup/scripts/backup-weekly.sh
     echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Add cronjobs for backup scripts
