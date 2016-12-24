@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 #############################################################################
-# Version 1.1.0-alpha.1
+# Version 1.1.0-alpha.2 (24-12-2016)
 #############################################################################
 
 #############################################################################
@@ -14,7 +14,7 @@
 # INTRODUCTION
 # This script will backup relevant folders and MySQL databases. 
 # You can modify it to include more folders or change the backup retention. 
-# If you want to change the time or frequency you should edit /etc/cron.d/
+# To change the time or frequency, edit /etc/cron.d/automated-backup.
 #############################################################################
 
 
@@ -23,10 +23,10 @@
 #############################################################################
 
 # The file backups will be stored here.
-BACKUP_PATH_FILES='/home/$USER/backup/files'
+BACKUP_PATH_FILES='/home/$BACKUPUSER/backup/files'
 
 # The MySQL database backups will be stored here.
-BACKUP_PATH_SQL='/home/$USER/backup/databases'
+BACKUP_PATH_SQL='/home/$BACKUPUSER/backup/databases'
 
 # To add more folders, place the folder path you want to add between the
 # quotation marks below. Make sure the folders are seperated with a space.
@@ -71,8 +71,8 @@ service apache2 start
 # SET BACKUP OWNERSHIP
 #############################################################################
 
-chown $USER:root /home/$USER/backup/files/*
-chown $USER:root /home/$USER/backup/databases/*
+chown $USER:root /home/$BACKUPUSER/backup/files/*
+chown $USER:root /home/$BACKUPUSER/backup/databases/*
 
 #############################################################################
 # DELETE OLDER BACKUPS
