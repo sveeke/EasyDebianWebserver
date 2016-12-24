@@ -14,7 +14,7 @@
 # INTRODUCTION
 # This script will backup relevant folders and MySQL databases. 
 # You can modify it to include more folders or change the backup retention. 
-# If you want to change the time or frequency you should edit /etc/cron.d/
+# To change the time or frequency, edit /etc/cron.d/automated-backup.
 #############################################################################
 
 
