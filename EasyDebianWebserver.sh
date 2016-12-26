@@ -295,7 +295,7 @@ echo -e "${white}The following software will be installed:
 - mariadb-client         		The MySQL based database client 
 - apache2                  		The Apache webserver
 - php                     		Popular hypertext preprocessor for dynamic content
-- Some php extentions    		PHP extention for interaction with mysql, handling images etc.
+- Some php extentions    		Some widely used PHP extention
 - libapache2-mod-php      		Integrate php in the apache webserver
 - python-certbot-apache			The official Let's Encrypt client
 
@@ -309,12 +309,12 @@ echo
 
 # Install packages for Debian 8 Jessie
 if [ "$OS" = "8" ]; then
-	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd libapache2-mod-php5
+	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd php5-curl libapache2-mod-php5
 	apt-get -y install python-certbot-apache -t jessie-backports
 
 # Install packages for Debian 9 Stretch
 elif [ "$OS" = "9" ]; then
-	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd libapache2-mod-php7.0 python-certbot-apache
+	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd php7.0-curl libapache2-mod-php7.0 python-certbot-apache
 fi
 
 sleep 1
@@ -328,26 +328,37 @@ echo
 echo
 
 # Hashing the password
-HASH=$(openssl passwd -1 -salt temp $BACKUPPASS)
+BACKUPHASH=$(openssl passwd -1 -salt temp $BACKUPPASS)
 
 # Create the backup user account with chosen password and its own home directory
 echo -e "${yellow}BACKUP USER ACCOUNT"
 echo -e -n "${white}Creating user account...${nc}"
-useradd $BACKUPUSER -s /bin/bash -m -U -p $HASH
+useradd $BACKUPUSER -s /bin/bash -m -U -p $BACKUPHASH
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-# Creating backup folders within the given backup account's home directory
+# Creating folders within the given backup account's home directory
 echo -e -n "${white}Creating backup folders...${nc}"
 mkdir /home/$BACKUPUSER/EasyDebianWebserver
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-# Adding handy scripts to EasyDebianWebserver folder
-echo -e -n "${white}Creating backup script...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-daily.sh -O /home/$BACKUPUSER/backup/backup-daily.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-weekly.sh -O /home/$BACKUPUSER/backup/backup-weekly.sh
+# Adding handy scripts and readme to EasyDebianWebserver folder
+echo -e -n "${white}Adding handy scripts...${nc}"
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/EasyDebianWebserver.sh -O /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/add-user.sh -O /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/readme -O /home/$BACKUPUSER/EasyDebianWebserver/README
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-
+# Setting folder and file permissions
+echo -e -n "${white}Setting folder and file permissions...${nc}"
+chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver
+chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
+chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
+chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver/README
+chmod 770 /home/$BACKUPUSER/EasyDebianWebserver
+chmod 770 /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
+chmod 770 /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
+chmod 770 /home/$BACKUPUSER/EasyDebianWebserver/README
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -361,12 +372,12 @@ echo
 echo
 
 # Hashing the password
-HASH=$(openssl passwd -1 -salt temp $USERPASS)
+USERHASH=$(openssl passwd -1 -salt temp $USERPASS)
 
 # Create the user account with chosen password and its own home directory
 echo -e "${yellow}USER ACCOUNT"
 echo -e -n "${white}Creating user account...${nc}"
-useradd $USER -s /bin/bash -m -U -p $HASH
+useradd $USER -s /bin/bash -m -U -p $USERHASH
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Create SSH folder
@@ -379,20 +390,22 @@ echo -e -n "${white}Adding public key...${nc}"
 echo "$SSH" > /home/$USER/.ssh/authorized_keys
 echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-# Setting folder and file permissions
-echo -e -n "${white}Setting folder and file permissions...${nc}"
-chown $USER:$USER /home/$USER/.ssh
-chown $USER:$USER /home/$USER/.ssh/authorized_keys
-chmod 700 /home/$USER/.ssh
-chmod 600 /home/$USER/.ssh/authorized_keys
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
-
 # Adding user to sudo
 echo -e -n "${white}Adding user account to sudo...${nc}"
 cat << EOF > /etc/sudoers.d/$USER
 # User privilege specification
 $USER   ALL=(ALL:ALL) ALL
 EOF
+echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+# Setting folder and file permissions
+echo -e -n "${white}Setting folder and file permissions...${nc}"
+chown $USER:$USER /home/$USER/.ssh
+chown $USER:$USER /home/$USER/.ssh/authorized_keys
+chown root:root /etc/sudoers.d/$USER
+chmod 700 /home/$USER/.ssh
+chmod 600 /home/$USER/.ssh/authorized_keys
+chmod 440 /etc/sudoers.d/$USER
 echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 fi
@@ -525,6 +538,7 @@ echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
+cd /home/$BACKUPUSER/EasyDebianWebserver
 
 #############################################################################
 # NOTES
@@ -540,7 +554,45 @@ echo -e "${white}
 ******************************************************************************************************
 
 Although you now have a fully functional Debian based webserver, you still need to do a few things 
-in order to make it more secure.
+in order to make it more secure. Below is some information and the steps you should take.
+
+	1.	${yellow}README and handy scripts${white}
+		A README file and some scripts to help you on your way can be found in:
+		
+		/home/$BACKUPUSER/EasyDebianWebserver
+
+	2. 	${yellow}FILE LAYOUT${white}
+		Since a lot of different file locations are being used by all the modifications from this
+		script, finding them cam be quite cumbersome. Therefore I wrote an overview below.
+		
+			README and handy scripts:			/home/$BACKUPUSER/EasyDebianWebserver
+			Weekly and daily backup scripts:	/home/$BACKUPUSER/backup
+			The archived file backups:			/home/$BACKUPUSER/backup/files
+			The archived database backups:		/home/$BACKUPUSER/backup/databases
+			Sources.list						/etc/apt/sources.list
+			File with cronjobs					/etc/cron.d/automated-backup
+			Sudo file from optional account:	/etc/sudoers.d/$USER
+			
+	3.	${yellow}FIREWALL${white}
+		UFW is a very user friendly frond-end for Debian's firewall. A comprehensive list of commands 
+		can be found in the README. Some examples to get you started:
+		
+			List all rules:						sudo ufw status
+			List all rules numbered:			sudo ufw status numbered
+			List all rules verbose:				sudo ufw status verbose
+			Enable firewall:					sudo ufw enable
+			Disable firewall:					sudo ufw disable
+			Allow incoming traffic on udp+tcp:	sudo ufw allow [port] (i.e. 1000)
+			Allow incoming traffic on proto:	sudo ufw allow [port]/[proto] (i.e. 1000/tcp)
+			Delete firewall rule:				sudo ufw delete [rule number]
+			
+		Note that UFW is not active yet. It will be automatically enabled when you restart your server. 
+
+	4. 	${yellow}REBOOT SERVER!${white}
+		You should reboot the server to enable the new hostname, firewall and pending kernel updates.
+		Do this by running the commands 'shutdown -r now' or 'reboot'.
+
+		OLD:
 
     1:  You should make sure that you can log in with your newly created user account and private key. 
         If succesfull, disable password authentication so only key authentication is allowed. 
@@ -549,13 +601,9 @@ in order to make it more secure.
         - Delete the pound (#) before '#AuthorizedKeysFile      %h/.ssh/authorized_keys'
         - Change '#PasswordAuthentication yes' to 'PasswordAuthentication no' (delete pound + yes>no)
 
-    2:  You should reboot your server to enable the hostname, firewall and possibly also kernel updates.
 
-        You can do this by using the command 'shutdown -r now' or 'reboot'.
-
-
-I hope you are happy with your new webserver and that it serves you well. If you have any questions
-you can post them on https://github.com/sveeke/EasyDebianWebserver.
+I hope you are happy with your new webserver and that it serves you (and others ;) well. If you have 
+any questions you can post them on https://github.com/sveeke/EasyDebianWebserver/issues.
 
 Good luck!
 
