@@ -49,7 +49,7 @@ umask 007
 # BACKUP FOLDERS
 #############################################################################
 
-tar -cpzf $BACKUP_PATH_FILES/backup-daily-$( date '+%Y-%m-%d-%H-%M-%S' ).tar.gz $BACKUP_FOLDERS
+tar -cpzf $BACKUP_PATH_FILES/backup-daily-files-$( date '+%Y-%m-%d-%H-%M-%S' ).tar.gz $BACKUP_FOLDERS
 
 #############################################################################
 # BACKUP MYSQL DATABASES
@@ -62,7 +62,7 @@ service apache2 stop
 sleep 10
 service mysql stop
 sleep 5
-tar -cpzf $BACKUP_PATH_SQL/backup-daily-$( date '+%Y-%m-%d-%H-%M-%S' ).tar.gz $BACKUP_SQL
+tar -cpzf $BACKUP_PATH_SQL/backup-daily-sql$( date '+%Y-%m-%d-%H-%M-%S' ).tar.gz $BACKUP_SQL
 service mysql start
 sleep 5
 service apache2 start
