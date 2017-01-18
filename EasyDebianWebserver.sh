@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-alpha.4 (26-12-2016)
+# Version 1.1.0-alpha.5 (18-01-2017)
 #############################################################################
 
 #############################################################################
@@ -62,9 +62,9 @@ echo -e "${yellow}
 echo
 echo -e "${white}This script will install and configure a webserver on your Debian server.${nc}"
 echo
-echo -e "${white}Starting install script in 5 seconds. Press ${green}ctrl + c ${white}to abort.${nc}"
+echo -e "${white}Press ${green}ctrl + c ${white}during the script to abort.${nc}"
 
-sleep 5
+sleep 3
 
 
 #############################################################################
@@ -91,7 +91,7 @@ echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 # Checking Debian version
 echo -e -n "${white}Running Debian 8 or 9...${nc}"
 	if [ -f /etc/debian_version ]; then
-		DEBVER=`cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1`
+		DEBVER=$(cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1)
 
         if [ "$DEBVER" = "8" ] || [ "$DEBVER" = "jessie" ]; then
 			echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
@@ -117,17 +117,17 @@ echo -e -n "${white}Running Debian 8 or 9...${nc}"
 # Checking internet connection
 echo -e -n "${white}Connected to the internet...${nc}"
 wget -q --tries=10 --timeout=20 --spider www.google.com
-if [[ $? -eq 0 ]]; then
+	if [[ $? -eq 0 ]]; then
         echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
     else
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
-		echo -e "${red}******************************************************************************************"
-		echo -e "${red}This script needs a functioning internet connection. Please connect to the internet first."
-		echo -e "${red}******************************************************************************************${nc}"
+		echo -e "${red}**********************************************************************"
+		echo -e "${red}Internet connection is required, please connect to the internet first."
+		echo -e "${red}**********************************************************************${nc}"
         echo
         exit
-fi
+	fi
 
 sleep 1
 
@@ -142,17 +142,26 @@ echo -e "${white}The script will gather some information from you.${nc}"
 
 # Choose hostname
 echo
-read -p "$(echo -e "${white}Enter server's hostname:               "${green})" HOSTNAME
+read -p "$(echo -e "${white}Enter server's hostname:               		"${green})" HOSTNAME
 
 # Choose username backup account
-read -p "$(echo -e "${white}Enter backup account username:         "${green})" BACKUPUSER
+while true
+	do
+		read -p "$(echo -e "${white}Enter backup account username:         		"${green})" BACKUPUSER
+			[ "$BACKUPUSER" != "backup" ] && break
+			echo
+			echo -e "${red}****************************************************"
+			echo -e "${red}User 'backup' is a system account and can't be used."
+			echo -e "${red}****************************************************"
+        echo
+	done
 
 # Choose password backup account
 while true
 	do
-		read -s -p "$(echo -e "${white}Enter backup account password:         "${nc})" BACKUPPASS
+		read -s -p "$(echo -e "${white}Enter backup account password:         		"${nc})" BACKUPPASS
 		echo
-		read -s -p "$(echo -e "${white}Enter backup account Password (again): "${nc})" BACKUPPASS2
+		read -s -p "$(echo -e "${white}Enter backup account Password (again): 		"${nc})" BACKUPPASS2
 			[ "$BACKUPPASS" = "$BACKUPPASS2" ] && break
 			echo
 			echo
@@ -166,7 +175,7 @@ while true
 echo
 while true
 	do
-		read -p "$(echo -e "${white}Add another user account? (yes/no):    "${green})" ADDACCOUNT
+		read -p "$(echo -e "${white}Add another user account? (yes/no):    		"${green})" ADDACCOUNT
 			[ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "no" ] || [ "$ADDACCOUNT" = "y" ] || [ "$ADDACCOUNT" = "n" ] && break
 			echo
 			echo -e "${red}**************************************************"
@@ -177,15 +186,15 @@ while true
 
 ## Choose username user account
 if [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "y" ]; then
-	read -p "$(echo -e "${white}Enter account username:                "${green})" USER
+	read -p "$(echo -e "${white}Enter account username:                		"${green})" USER
 
 ## Choose password user account
 	while true
 		do
-			read -s -p "$(echo -e "${white}Enter user account password:           "${nc})" USERPASS
+			read -s -p "$(echo -e "${white}Enter user account password:           		"${nc})" USERPASS
 			echo
-			read -s -p "$(echo -e "${white}Enter user account Password (again):   "${nc})" USERPASS2
-				[ "$BACKUPPASS" = "$BACKUPPASS2" ] && break
+			read -s -p "$(echo -e "${white}Enter user account Password (again):   		"${nc})" USERPASS2
+				[ "$USERPASS" = "$USERPASS2" ] && break
 				echo
 				echo
 				echo -e "${red}*********************************************"
@@ -196,26 +205,15 @@ if [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "y" ]; then
 
 ## Add content of AuthorizedKeysFile
 	echo
-	read -p "$(echo -e "${white}Enter AuthorizedKeysFile's content:    "${green})" SSH
+	read -p "$(echo -e "${white}Enter AuthorizedKeysFile's content:    		"${green})" SSH
 fi
 
 echo
-echo -e "${white}*******************************************************************************************"
-echo -e "${white}Add more user accounts later on with /home/[backup account]/EasyDebianWebserver/add-user.sh"
-echo -e "${white}*******************************************************************************************"
+echo -e "${white}****************************************************************************************"
+echo -e "${white}Tip! add more user accounts later on with add-user.sh in the EasyDebianWebserver folder."
+echo -e "${white}****************************************************************************************"
 
 sleep 3
-
-	
-# Notice
-echo
-echo
-echo -e "${white}*****************************************************************************"
-echo -e "${white}Please note that some more user interaction is required when installing MySQL"
-echo -e "${white}Just sit back and relax some while the script installs everything :-)."
-echo -e "${white}*****************************************************************************${nc}"
-
-sleep 5
 
 
 #############################################################################
@@ -242,11 +240,11 @@ echo -e "${yellow}REPLACING REPOSITORIES"
 echo -e -n "${white}Modifying sources.list...${nc}"
 
 if [ "$OS" = "8" ]; then
-	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list
+	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list --no-check-certificate
 	echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 elif [ "$OS" = "9" ]; then
-	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list
+	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list --no-check-certificate
 	echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 fi
 
@@ -263,12 +261,12 @@ echo
 # Update the package list from the Debian repositories
 echo -e "${yellow}UPDATING OPERATING SYSTEM"
 echo -e "${white}Downloading package list from repositories... ${grey}"
-apt-get update
+apt update
 
 # Upgrade operating system with new package list
 echo
 echo -e "${white}Downloading and installing new packages...${grey}"
-apt-get -y upgrade
+apt -y upgrade
 
 sleep 1
 
@@ -309,7 +307,7 @@ echo
 
 # Install packages for Debian 8 Jessie
 if [ "$OS" = "8" ]; then
-	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd php5-curl libapache2-mod-php5
+	apt-get -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd php5-curl libapache2-mod-php5
 	apt-get -y install python-certbot-apache -t jessie-backports
 
 # Install packages for Debian 9 Stretch
@@ -346,7 +344,7 @@ echo -e -n "${white}Adding handy scripts...${nc}"
 wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/EasyDebianWebserver.sh -O /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
 wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/add-user.sh -O /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
 wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/readme -O /home/$BACKUPUSER/EasyDebianWebserver/README
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
@@ -367,7 +365,7 @@ sleep 1
 # OPTIONAL: SETTING UP USER ACCOUNT
 #############################################################################
 
-if [ "$ADDACOUNT" = "y" ] || [ "$ADDACCOUNT" = "yes" ]; then
+if [ "$ADDACCOUNT" = "y" ] || [ "$ADDACCOUNT" = "yes" ]; then
 echo
 echo
 
@@ -396,7 +394,7 @@ cat << EOF > /etc/sudoers.d/$USER
 # User privilege specification
 $USER   ALL=(ALL:ALL) ALL
 EOF
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
@@ -428,7 +426,7 @@ ufw default deny incoming
 # Allow ssh (22), http (80) and http (443) traffic through the firewall
 echo
 echo -e "${white}Configuring firewall for ssh, http and https traffic...${grey}"
-ufw allow ssh
+ufw limit ssh
 ufw allow http
 ufw allow https
 echo
@@ -538,7 +536,6 @@ echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
-cd /home/$BACKUPUSER/EasyDebianWebserver
 
 #############################################################################
 # NOTES
@@ -556,15 +553,15 @@ echo -e "${white}
 Although you now have a fully functional Debian based webserver, you still need to do a few things 
 in order to make it more secure. Below is some information and the steps you should take.
 
-	1.	${yellow}README and handy scripts${white}
+	1.	${yellow}README${white}
 		A README file and some scripts to help you on your way can be found in:
-		
-		/home/$BACKUPUSER/EasyDebianWebserver
+
+			/home/$BACKUPUSER/EasyDebianWebserver
 
 	2. 	${yellow}FILE LAYOUT${white}
 		Since a lot of different file locations are being used by all the modifications from this
 		script, finding them cam be quite cumbersome. Therefore I wrote an overview below.
-		
+
 			README and handy scripts:			/home/$BACKUPUSER/EasyDebianWebserver
 			Weekly and daily backup scripts:	/home/$BACKUPUSER/backup
 			The archived file backups:			/home/$BACKUPUSER/backup/files
@@ -572,7 +569,7 @@ in order to make it more secure. Below is some information and the steps you sho
 			Sources.list						/etc/apt/sources.list
 			File with cronjobs					/etc/cron.d/automated-backup
 			Sudo file from optional account:	/etc/sudoers.d/$USER
-			
+
 	3.	${yellow}FIREWALL${white}
 		UFW is a very user friendly frond-end for Debian's firewall. A comprehensive list of commands 
 		can be found in the README. Some examples to get you started:
@@ -585,12 +582,14 @@ in order to make it more secure. Below is some information and the steps you sho
 			Allow incoming traffic on udp+tcp:	sudo ufw allow [port] (i.e. 1000)
 			Allow incoming traffic on proto:	sudo ufw allow [port]/[proto] (i.e. 1000/tcp)
 			Delete firewall rule:				sudo ufw delete [rule number]
-			
+
 		Note that UFW is not active yet. It will be automatically enabled when you restart your server. 
 
 	4. 	${yellow}REBOOT SERVER!${white}
 		You should reboot the server to enable the new hostname, firewall and pending kernel updates.
-		Do this by running the commands 'shutdown -r now' or 'reboot'.
+		Do this by running one of the commands:
+
+			'shutdown -r now' or 'reboot'.
 
 		OLD:
 
