@@ -71,8 +71,8 @@ service apache2 start
 # SET BACKUP OWNERSHIP
 #############################################################################
 
-chown $USER:root /home/$BACKUPUSER/backup/files/*
-chown $USER:root /home/$BACKUPUSER/backup/databases/*
+chown $BACKUPUSER:root /home/$BACKUPUSER/backup/files/*
+chown $BACKUPUSER:root /home/$BACKUPUSER/backup/databases/*
 
 #############################################################################
 # DELETE OLDER BACKUPS
