@@ -41,18 +41,18 @@ echo -e "${yellow}
 #############################################################################
 # Copyright 2016 Sebas Veeke                                                #
 #                                                                           #
-# This file is part of EasyDebianWebserver                                #
+# This file is part of EasyDebianWebserver                                  #
 #                                                                           #
-# EasyDebianWebserver is free software: you can redistribute it and/or    #
+# EasyDebianWebserver is free software: you can redistribute it and/or      #
 # modify it under the terms of the GNU Affero General Public License        #
 # version 3 as published by the Free Software Foundation.                   #
 #                                                                           #
-# EasyDebianWebserver is distributed in the hope that it will be          #
+# EasyDebianWebserver is distributed in the hope that it will be            #
 # useful, but without any warranty. See the GNU Affero General Public       #
 # License for more details.                                                 #
 #                                                                           #
 # You should have received a copy of the GNU Affero General Public License  #
-# along with EasyDebianWebserver. If not, see http://www.gnu.org/licenses #
+# along with EasyDebianWebserver. If not, see http://www.gnu.org/licenses   #
 #                                                                           #
 # Contact:                                                                  #
 # > e-mail      mail@sebasveeke.nl                                          #
