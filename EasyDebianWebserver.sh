@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-alpha.5 (18-01-2017)
+# Version 1.1.0-alpha.6 (10-07-2017)
 #############################################################################
 
 #############################################################################
@@ -41,18 +41,18 @@ echo -e "${yellow}
 #############################################################################
 # Copyright 2016 Sebas Veeke                                                #
 #                                                                           #
-# This file is part of SimpleDebianWebserver                                #
+# This file is part of EasyDebianWebserver                                #
 #                                                                           #
-# SimpleDebianWebserver is free software: you can redistribute it and/or    #
+# EasyDebianWebserver is free software: you can redistribute it and/or    #
 # modify it under the terms of the GNU Affero General Public License        #
 # version 3 as published by the Free Software Foundation.                   #
 #                                                                           #
-# SimpleDebianWebserver is distributed in the hope that it will be          #
+# EasyDebianWebserver is distributed in the hope that it will be          #
 # useful, but without any warranty. See the GNU Affero General Public       #
 # License for more details.                                                 #
 #                                                                           #
 # You should have received a copy of the GNU Affero General Public License  #
-# along with SimpleDebianWebserver. If not, see http://www.gnu.org/licenses #
+# along with EasyDebianWebserver. If not, see http://www.gnu.org/licenses #
 #                                                                           #
 # Contact:                                                                  #
 # > e-mail      mail@sebasveeke.nl                                          #
@@ -60,7 +60,7 @@ echo -e "${yellow}
 #############################################################################${nc}"
 
 echo
-echo -e "${white}This script will install and configure a webserver on your Debian server.${nc}"
+echo -e "${white}This script will install and configure a webserver on your Debian machine.${nc}"
 echo
 echo -e "${white}Press ${green}ctrl + c ${white}during the script to abort.${nc}"
 
@@ -77,57 +77,57 @@ echo -e "${yellow}CHECKING REQUIREMENTS"
 
 # Checking if script runs as root
 echo -e -n "${white}Script is running as root..."
-	if [ "$EUID" -ne 0 ]; then
+    if [ "$EUID" -ne 0 ]; then
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
         echo -e "${red}************************************************************************"
-		echo -e "${red}This script should be run as root. Use su root and run the script again."
-		echo -e "${red}************************************************************************${nc}"
+	    echo -e "${red}This script should be run as root. Use su root and run the script again."
+	    echo -e "${red}************************************************************************${nc}"
         echo
-		exit
-	fi
+	    exit
+    fi
 echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
 
 # Checking Debian version
 echo -e -n "${white}Running Debian 8 or 9...${nc}"
-	if [ -f /etc/debian_version ]; then
-		DEBVER=$(cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1)
+    if [ -f /etc/debian_version ]; then
+        DEBVER=$(cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1)
 
         if [ "$DEBVER" = "8" ] || [ "$DEBVER" = "jessie" ]; then
-			echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
-			OS='8'
-			sleep 2
+            echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+            OS='8'
+            sleep 2
 
-		elif [ "$DEBVER" = "9" ] || [ "$DEBVER" = "stretch" ]; then
-			echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
-			OS='9'
-			sleep 2
+        elif [ "$DEBVER" = "9" ] || [ "$DEBVER" = "stretch" ]; then
+            echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+            OS='9'
+            sleep 2
 
-		else
-			echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
-			echo
-			echo -e "${red}**********************************************************************"
-			echo -e "${red}This script will only work on Debian 8 (Jessie) or Debian 9 (Stretch)."
-			echo -e "${red}**********************************************************************${nc}"
-			echo
-			exit 1
+        else
+            echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
+            echo
+            echo -e "${red}**********************************************************************"
+            echo -e "${red}This script will only work on Debian 8 (Jessie) or Debian 9 (Stretch)."
+            echo -e "${red}**********************************************************************${nc}"
+            echo
+            exit 1
         fi
-	fi
+    fi
 
 # Checking internet connection
 echo -e -n "${white}Connected to the internet...${nc}"
 wget -q --tries=10 --timeout=20 --spider www.google.com
-	if [[ $? -eq 0 ]]; then
+    if [[ $? -eq 0 ]]; then
         echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
     else
         echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
         echo
-		echo -e "${red}**********************************************************************"
-		echo -e "${red}Internet connection is required, please connect to the internet first."
-		echo -e "${red}**********************************************************************${nc}"
+        echo -e "${red}**********************************************************************"
+        echo -e "${red}Internet connection is required, please connect to the internet first."
+        echo -e "${red}**********************************************************************${nc}"
         echo
         exit
-	fi
+    fi
 
 sleep 1
 
@@ -146,72 +146,84 @@ read -p "$(echo -e "${white}Enter server's hostname:               		"${green})"
 
 # Choose username backup account
 while true
-	do
-		read -p "$(echo -e "${white}Enter backup account username:         		"${green})" BACKUPUSER
-			[ "$BACKUPUSER" != "backup" ] && break
-			echo
-			echo -e "${red}****************************************************"
-			echo -e "${red}User 'backup' is a system account and can't be used."
-			echo -e "${red}****************************************************"
+    do
+        read -p "$(echo -e "${white}Enter backup account username:         		"${green})" BACKUPUSER
+            [ "$BACKUPUSER" != "backup" ] && break
+            echo
+            echo -e "${red}****************************************************"
+            echo -e "${red}User 'backup' is a system account and can't be used."
+            echo -e "${red}****************************************************"
         echo
-	done
+    done
 
 # Choose password backup account
 while true
-	do
-		read -s -p "$(echo -e "${white}Enter backup account password:         		"${nc})" BACKUPPASS
-		echo
-		read -s -p "$(echo -e "${white}Enter backup account Password (again): 		"${nc})" BACKUPPASS2
-			[ "$BACKUPPASS" = "$BACKUPPASS2" ] && break
-			echo
-			echo
-			echo -e "${red}*********************************************"
-			echo -e "${red}Your passwords don´t match, please try again."
-			echo -e "${red}*********************************************"
+    do
+        read -s -p "$(echo -e "${white}Enter backup account password:         		"${nc})" BACKUPPASS
         echo
-	done
+        read -s -p "$(echo -e "${white}Enter backup account Password (again): 		"${nc})" BACKUPPASS2
+            [ "$BACKUPPASS" = "$BACKUPPASS2" ] && break
+            echo
+            echo
+            echo -e "${red}*********************************************"
+            echo -e "${red}Your passwords don´t match, please try again."
+            echo -e "${red}*********************************************"
+        echo
+    done
 
 # Check whether the user wants to create another account
 echo
 while true
-	do
-		read -p "$(echo -e "${white}Add another user account? (yes/no):    		"${green})" ADDACCOUNT
-			[ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "no" ] || [ "$ADDACCOUNT" = "y" ] || [ "$ADDACCOUNT" = "n" ] && break
-			echo
-			echo -e "${red}**************************************************"
-			echo -e "${red}Please type yes or no and press enter to continue."
-			echo -e "${red}**************************************************"
-		echo
-	done
+    do
+        read -p "$(echo -e "${white}Add another user account? (yes/no):    		"${green})" ADDACCOUNT
+            [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "no" ] || [ "$ADDACCOUNT" = "y" ] || [ "$ADDACCOUNT" = "n" ] && break
+            echo
+            echo -e "${red}**************************************************"
+            echo -e "${red}Please type yes or no and press enter to continue."
+            echo -e "${red}**************************************************"
+        echo
+    done
 
 ## Choose username user account
 if [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "y" ]; then
-	read -p "$(echo -e "${white}Enter account username:                		"${green})" USER
+    read -p "$(echo -e "${white}Enter account username:                		"${green})" USER
 
 ## Choose password user account
-	while true
-		do
-			read -s -p "$(echo -e "${white}Enter user account password:           		"${nc})" USERPASS
-			echo
-			read -s -p "$(echo -e "${white}Enter user account Password (again):   		"${nc})" USERPASS2
-				[ "$USERPASS" = "$USERPASS2" ] && break
-				echo
-				echo
-				echo -e "${red}*********************************************"
-				echo -e "${red}Your passwords don´t match, please try again."
-				echo -e "${red}*********************************************"
-			echo
-		done
+while true
+    do
+        read -s -p "$(echo -e "${white}Enter user account password:           		"${nc})" USERPASS
+        echo
+        read -s -p "$(echo -e "${white}Enter user account Password (again):   		"${nc})" USERPASS2
+            [ "$USERPASS" = "$USERPASS2" ] && break
+            echo
+            echo
+            echo -e "${red}*********************************************"
+            echo -e "${red}Your passwords don´t match, please try again."
+            echo -e "${red}*********************************************"
+        echo
+    done
 
 ## Add content of AuthorizedKeysFile
-	echo
-	read -p "$(echo -e "${white}Enter AuthorizedKeysFile's content:    		"${green})" SSH
+    echo
+    read -p "$(echo -e "${white}Enter AuthorizedKeysFile's content:    		"${green})" SSH
 fi
 
 echo
 echo -e "${white}****************************************************************************************"
 echo -e "${white}Tip! add more user accounts later on with add-user.sh in the EasyDebianWebserver folder."
 echo -e "${white}****************************************************************************************"
+
+# Choose MariaDB/MYSQL root password
+read -s -p "$(echo -e "${white}Enter MariaDB/MySQL root password:         		"${nc})" MYSQLPASS
+    echo
+    read -s -p "$(echo -e "${white}Enter MariaDB/MYSQL root Password (again): 		"${nc})" MYSQLPASS2
+        [ "$MYSQLPASS" = "$MYSQLPASS2" ] && break
+        echo
+        echo
+        echo -e "${red}*********************************************"
+        echo -e "${red}Your passwords don´t match, please try again."
+        echo -e "${red}*********************************************"
+    echo
 
 sleep 3
 
@@ -240,12 +252,12 @@ echo -e "${yellow}REPLACING REPOSITORIES"
 echo -e -n "${white}Modifying sources.list...${nc}"
 
 if [ "$OS" = "8" ]; then
-	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list --no-check-certificate
-	echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list --no-check-certificate
+    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 elif [ "$OS" = "9" ]; then
-	wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list --no-check-certificate
-	echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list --no-check-certificate
+    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 fi
 
 sleep 1
@@ -297,8 +309,6 @@ echo -e "${white}The following software will be installed:
 - libapache2-mod-php      		Integrate php in the apache webserver
 - python-certbot-apache			The official Let's Encrypt client
 
-Note: user interaction required when installing MySQL/MariaDB!
-
 Starting in 10 seconds...${grey}"
 
 sleep 10
@@ -307,12 +317,12 @@ echo
 
 # Install packages for Debian 8 Jessie
 if [ "$OS" = "8" ]; then
-	apt-get -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd php5-curl libapache2-mod-php5
-	apt-get -y install python-certbot-apache -t jessie-backports
+    apt-get -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd php5-curl libapache2-mod-php5
+    apt-get -y install python-certbot-apache -t jessie-backports
 
 # Install packages for Debian 9 Stretch
 elif [ "$OS" = "9" ]; then
-	apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd php7.0-curl libapache2-mod-php7.0 python-certbot-apache
+    apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd php7.0-curl libapache2-mod-php7.0 python-certbot-apache
 fi
 
 sleep 1
@@ -348,14 +358,8 @@ echo -e "\t\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
-chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver
-chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
-chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
-chown $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver/README
-chmod 770 /home/$BACKUPUSER/EasyDebianWebserver
-chmod 770 /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
-chmod 770 /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
-chmod 770 /home/$BACKUPUSER/EasyDebianWebserver/README
+chown -R $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver
+chmod -R 770 /home/$BACKUPUSER/EasyDebianWebserver
 echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
@@ -483,6 +487,38 @@ sleep 1
 
 
 #############################################################################
+# CONFIGURE MYSQL
+#############################################################################
+
+echo
+echo
+echo -e "${yellow}CONFIGURING MYSQL"
+
+# Harden MariaDB/MYSQL installation
+echo -e -n "${white}Adding password...${grey}"
+mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('$MYSQLPASS') WHERE User='root'"
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Disallow remote root login...${grey}"
+mysql -u root -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Remove anonymous users...${grey}"
+mysql -u root -e "DELETE FROM mysql.user WHERE User=''"
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Remove test database and access to it...${grey}"
+mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+echo -e -n "${white}Flushing privileges...${grey}"
+mysql -u root -e "FLUSH PRIVILEGES"
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+
+sleep 1
+
+
+#############################################################################
 # CREATE AUTOMATIC BACKUP
 #############################################################################
 
@@ -492,9 +528,7 @@ echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
 
 # Creating backup folders within the given backup account's home directory
 echo -e -n "${white}Creating backup folders...${nc}"
-mkdir /home/$BACKUPUSER/backup
-mkdir /home/$BACKUPUSER/backup/files
-mkdir /home/$BACKUPUSER/backup/databases
+mkdir -P /home/$BACKUPUSER/backup/files /home/$BACKUPUSER/backup/databases
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Adding backupscripts to folders
@@ -511,16 +545,8 @@ echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
-chown $BACKUPUSER:root /home/$BACKUPUSER/backup
-chown $BACKUPUSER:root /home/$BACKUPUSER/backup/files
-chown $BACKUPUSER:root /home/$BACKUPUSER/backup/databases
-chown $BACKUPUSER:root /home/$BACKUPUSER/backup/backup-daily.sh
-chown $BACKUPUSER:root /home/$BACKUPUSER/backup/backup-weekly.sh
-chmod 770 /home/$BACKUPUSER/backup
-chmod 770 /home/$BACKUPUSER/backup/files
-chmod 770 /home/$BACKUPUSER/backup/databases
-chmod 770 /home/$BACKUPUSER/backup/backup-daily.sh
-chmod 770 /home/$BACKUPUSER/backup/backup-weekly.sh
+chown -R $BACKUPUSER:root /home/$BACKUPUSER/backup
+chmod -R 770 /home/$BACKUPUSER/backup
 echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Add cronjobs for backup scripts
@@ -550,8 +576,8 @@ echo -e "${white}
                                             ${yellow}IMPORTANT!${white}
 ******************************************************************************************************
 
-Although you now have a fully functional Debian based webserver, you still need to do a few things 
-in order to make it more secure. Below is some information and the steps you should take.
+Although you now have a fully functional Debian based webserver, you still need to reboot 
+in order to make it more secure. Below is some additional information on your new server.
 
 	1.	${yellow}README${white}
 		A README file and some scripts to help you on your way can be found in:
@@ -560,14 +586,14 @@ in order to make it more secure. Below is some information and the steps you sho
 
 	2. 	${yellow}FILE LAYOUT${white}
 		Since a lot of different file locations are being used by all the modifications from this
-		script, finding them cam be quite cumbersome. Therefore I wrote an overview below.
+		script, finding them can be quite cumbersome. Therefore I wrote an overview below.
 
 			README and handy scripts:			/home/$BACKUPUSER/EasyDebianWebserver
 			Weekly and daily backup scripts:	/home/$BACKUPUSER/backup
 			The archived file backups:			/home/$BACKUPUSER/backup/files
 			The archived database backups:		/home/$BACKUPUSER/backup/databases
 			Sources.list						/etc/apt/sources.list
-			File with cronjobs					/etc/cron.d/automated-backup
+			File with cronjobs:					/etc/cron.d/automated-backup
 			Sudo file from optional account:	/etc/sudoers.d/$USER
 
 	3.	${yellow}FIREWALL${white}
@@ -587,19 +613,9 @@ in order to make it more secure. Below is some information and the steps you sho
 
 	4. 	${yellow}REBOOT SERVER!${white}
 		You should reboot the server to enable the new hostname, firewall and pending kernel updates.
-		Do this by running one of the commands:
+		Do this by running one of the following commands:
 
 			'shutdown -r now' or 'reboot'.
-
-		OLD:
-
-    1:  You should make sure that you can log in with your newly created user account and private key. 
-        If succesfull, disable password authentication so only key authentication is allowed. 
-
-        You can do this by editing /etc/ssh/sshd_config and changing the following two lines:
-        - Delete the pound (#) before '#AuthorizedKeysFile      %h/.ssh/authorized_keys'
-        - Change '#PasswordAuthentication yes' to 'PasswordAuthentication no' (delete pound + yes>no)
-
 
 I hope you are happy with your new webserver and that it serves you (and others ;) well. If you have 
 any questions you can post them on https://github.com/sveeke/EasyDebianWebserver/issues.
@@ -610,4 +626,3 @@ Good luck!
 echo
 echo
 exit
-
