@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-alpha.6 (10-07-2017)
+# Version 1.1.0-beta.1(11-07-2017)
 #############################################################################
 
 #############################################################################
@@ -137,6 +137,7 @@ sleep 1
 #############################################################################
 
 echo
+echo
 echo -e "${yellow}USER INPUT"
 echo -e "${white}The script will gather some information from you.${nc}"
 
@@ -210,22 +211,26 @@ fi
 
 echo
 echo -e "${white}****************************************************************************************"
-echo -e "${white}Tip! add more user accounts later on with add-user.sh in the EasyDebianWebserver folder."
+echo -e "${white}Tip! Add more user accounts later on with add-user.sh in the EasyDebianWebserver folder."
 echo -e "${white}****************************************************************************************"
 
 # Choose MariaDB/MYSQL root password
-read -s -p "$(echo -e "${white}Enter MariaDB/MySQL root password:         		"${nc})" MYSQLPASS
-    echo
-    read -s -p "$(echo -e "${white}Enter MariaDB/MYSQL root Password (again): 		"${nc})" MYSQLPASS2
-        [ "$MYSQLPASS" = "$MYSQLPASS2" ] && break
+echo
+while true
+    do
+    read -s -p "$(echo -e "${white}Enter MariaDB/MySQL root password:         	"${nc})" MYSQLPASS
         echo
+        read -s -p "$(echo -e "${white}Enter MariaDB/MYSQL root Password (again): 	"${nc})" MYSQLPASS2
+            [ "$MYSQLPASS" = "$MYSQLPASS2" ] && break
+            echo
+            echo
+            echo -e "${red}*********************************************"
+            echo -e "${red}Your passwords don´t match, please try again."
+            echo -e "${red}*********************************************"
         echo
-        echo -e "${red}*********************************************"
-        echo -e "${red}Your passwords don´t match, please try again."
-        echo -e "${red}*********************************************"
-    echo
+    done
 
-sleep 3
+sleep 1
 
 
 #############################################################################
@@ -272,12 +277,12 @@ echo
 
 # Update the package list from the Debian repositories
 echo -e "${yellow}UPDATING OPERATING SYSTEM"
-echo -e "${white}Downloading package list from repositories... ${grey}"
+echo -e "${white}Downloading package list from repositories... ${nc}"
 apt update
 
 # Upgrade operating system with new package list
 echo
-echo -e "${white}Downloading and installing new packages...${grey}"
+echo -e "${white}Downloading and installing new packages...${nc}"
 apt -y upgrade
 
 sleep 1
@@ -292,24 +297,24 @@ echo
 echo -e "${yellow}INSTALLING SOFTWARE"
 echo -e "${white}The following software will be installed:
 
-- apt-transport-https       	For using apt with https
-- unattended-upgrades        	For automatically upgrading Debian with security updates
-- ntp                       	Network Time Protocol                      
-- ufw                      		This is an easy to use firewall frontend for iptables
-- sudo                     		Allows the user to execute commands as root
-- zip                      		For making zip archives
-- unzip                    		For extracting zip archives
-- sysstat                  		Some handy system performance tools
-- curl                      	Transfer data in different ways
-- mariadb-server          		The MySQL based database server
-- mariadb-client         		The MySQL based database client 
-- apache2                  		The Apache webserver
-- php                     		Popular hypertext preprocessor for dynamic content
-- Some php extentions    		Some widely used PHP extention
-- libapache2-mod-php      		Integrate php in the apache webserver
-- python-certbot-apache			The official Let's Encrypt client
+- apt-transport-https            For using apt with https
+- unattended-upgrades            For automatically upgrading Debian with security updates
+- ntp                            Network Time Protocol                      
+- ufw                            This is an easy to use firewall frontend for iptables
+- sudo                           Allows the user to execute commands as root
+- zip                            For making zip archives
+- unzip                          For extracting zip archives
+- sysstat                        Some handy system performance tools
+- curl                           Transfer data in different ways
+- mariadb-server                 The MySQL based database server
+- mariadb-client                 The MySQL based database client 
+- apache2                        The Apache webserver
+- php                            Popular hypertext preprocessor for dynamic content
+- Some php extentions            Some widely used PHP extention
+- libapache2-mod-php             Integrate php in the apache webserver
+- python-certbot-apache          The official Let's Encrypt client
 
-Starting in 10 seconds...${grey}"
+Starting in 10 seconds...${nc}"
 
 sleep 10
 echo
@@ -354,7 +359,7 @@ echo -e -n "${white}Adding handy scripts...${nc}"
 wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/EasyDebianWebserver.sh -O /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
 wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/add-user.sh -O /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
 wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/readme -O /home/$BACKUPUSER/EasyDebianWebserver/README
-echo -e "\t\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
 echo -e -n "${white}Setting folder and file permissions...${nc}"
@@ -501,15 +506,15 @@ echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Disallow remote root login...${grey}"
 mysql -u root -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Remove anonymous users...${grey}"
 mysql -u root -e "DELETE FROM mysql.user WHERE User=''"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Remove test database and access to it...${grey}"
 mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
 
 echo -e -n "${white}Flushing privileges...${grey}"
 mysql -u root -e "FLUSH PRIVILEGES"
@@ -528,7 +533,7 @@ echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
 
 # Creating backup folders within the given backup account's home directory
 echo -e -n "${white}Creating backup folders...${nc}"
-mkdir -P /home/$BACKUPUSER/backup/files /home/$BACKUPUSER/backup/databases
+mkdir -p /home/$BACKUPUSER/backup/files /home/$BACKUPUSER/backup/databases
 echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Adding backupscripts to folders
@@ -576,49 +581,49 @@ echo -e "${white}
                                             ${yellow}IMPORTANT!${white}
 ******************************************************************************************************
 
-Although you now have a fully functional Debian based webserver, you still need to reboot 
-in order to make it more secure. Below is some additional information on your new server.
+    Although you now have a fully functional Debian based webserver, you still need to reboot
+    in order to make it more secure. Below is some additional information on your new server.
 
-	1.	${yellow}README${white}
-		A README file and some scripts to help you on your way can be found in:
+    1.	${yellow}README${white}
+    A README file and some scripts to help you on your way can be found in:
 
-			/home/$BACKUPUSER/EasyDebianWebserver
+        /home/$BACKUPUSER/EasyDebianWebserver
 
-	2. 	${yellow}FILE LAYOUT${white}
-		Since a lot of different file locations are being used by all the modifications from this
-		script, finding them can be quite cumbersome. Therefore I wrote an overview below.
+    2. 	${yellow}FILE LAYOUT${white}
+        Since a lot of different file locations are being used by all the modifications from this
+        script, finding them can be quite cumbersome. Therefore I wrote an overview below.
 
-			README and handy scripts:			/home/$BACKUPUSER/EasyDebianWebserver
-			Weekly and daily backup scripts:	/home/$BACKUPUSER/backup
-			The archived file backups:			/home/$BACKUPUSER/backup/files
-			The archived database backups:		/home/$BACKUPUSER/backup/databases
-			Sources.list						/etc/apt/sources.list
-			File with cronjobs:					/etc/cron.d/automated-backup
-			Sudo file from optional account:	/etc/sudoers.d/$USER
+            README and handy scripts:            /home/$BACKUPUSER/EasyDebianWebserver
+            Weekly and daily backup scripts:     /home/$BACKUPUSER/backup
+            The archived file backups:           /home/$BACKUPUSER/backup/files
+            The archived database backups:       /home/$BACKUPUSER/backup/databases
+            Sources.list                         /etc/apt/sources.list
+            File with cronjobs:                  /etc/cron.d/automated-backup
+            Sudo file from optional account:     /etc/sudoers.d/$USER
 
-	3.	${yellow}FIREWALL${white}
-		UFW is a very user friendly frond-end for Debian's firewall. A comprehensive list of commands 
-		can be found in the README. Some examples to get you started:
-		
-			List all rules:						sudo ufw status
-			List all rules numbered:			sudo ufw status numbered
-			List all rules verbose:				sudo ufw status verbose
-			Enable firewall:					sudo ufw enable
-			Disable firewall:					sudo ufw disable
-			Allow incoming traffic on udp+tcp:	sudo ufw allow [port] (i.e. 1000)
-			Allow incoming traffic on proto:	sudo ufw allow [port]/[proto] (i.e. 1000/tcp)
-			Delete firewall rule:				sudo ufw delete [rule number]
+    3.	${yellow}FIREWALL${white}
+        UFW is a very user friendly frond-end for Debian's firewall. A comprehensive list of commands
+        can be found in the README. Some examples to get you started:
 
-		Note that UFW is not active yet. It will be automatically enabled when you restart your server. 
+            List all rules:                      sudo ufw status
+            List all rules numbered:             sudo ufw status numbered
+            List all rules verbose:              sudo ufw status verbose
+            Enable firewall:                     sudo ufw enable
+            Disable firewall:                    sudo ufw disable
+            Allow incoming traffic on udp+tcp:   sudo ufw allow [port] (i.e. 1000)
+            Allow incoming traffic on proto:     sudo ufw allow [port]/[proto] (i.e. 1000/tcp)
+            Delete firewall rule:                sudo ufw delete [rule number]
 
-	4. 	${yellow}REBOOT SERVER!${white}
-		You should reboot the server to enable the new hostname, firewall and pending kernel updates.
-		Do this by running one of the following commands:
+        Note that UFW is not active yet. It will be automatically enabled when you restart your server.
 
-			'shutdown -r now' or 'reboot'.
+    4. 	${yellow}REBOOT SERVER!${white}
+        You should reboot the server to enable the new hostname, firewall and pending kernel updates.
+        Do this by running one of the following commands:
 
-I hope you are happy with your new webserver and that it serves you (and others ;) well. If you have 
-any questions you can post them on https://github.com/sveeke/EasyDebianWebserver/issues.
+            'shutdown -r now' or 'reboot'.
+
+    I hope you are happy with your new webserver and that it serves you (and others ;) well. If you 
+    have any questions you can post them on https://github.com/sveeke/EasyDebianWebserver/issues.
 
 Good luck!
 
