@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-beta.1(11-07-2017)
+# Version 1.1.0-BETA.2 (22-07-2017)
 #############################################################################
 
 #############################################################################
-# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
+# Copyright 2016-2017 Sebas Veeke. Released under the AGPLv3 license
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
 # Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
 #############################################################################
@@ -77,8 +77,9 @@ echo -e "${yellow}CHECKING REQUIREMENTS"
 
 # Checking if script runs as root
 echo -e -n "${white}Script is running as root..."
+sleep 1
     if [ "$EUID" -ne 0 ]; then
-        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
+        echo -e "\\t\\t\\t\\t\\t${white}[${red}NO${white}]${nc}"
         echo
         echo -e "${red}************************************************************************"
 	    echo -e "${red}This script should be run as root. Use su root and run the script again."
@@ -86,25 +87,24 @@ echo -e -n "${white}Script is running as root..."
         echo
 	    exit
     fi
-echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+echo -e "\\t\\t\\t\\t\\t${white}[${green}YES${white}]${nc}"
 
 # Checking Debian version
 echo -e -n "${white}Running Debian 8 or 9...${nc}"
+sleep 1
     if [ -f /etc/debian_version ]; then
         DEBVER=$(cat /etc/debian_version | cut -d '.' -f 1 | cut -d '/' -f 1)
 
         if [ "$DEBVER" = "8" ] || [ "$DEBVER" = "jessie" ]; then
-            echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+            echo -e "\\t\\t\\t\\t\\t${white}[${green}YES${white}]${nc}"
             OS='8'
-            sleep 2
 
         elif [ "$DEBVER" = "9" ] || [ "$DEBVER" = "stretch" ]; then
-            echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+            echo -e "\\t\\t\\t\\t\\t${white}[${green}YES${white}]${nc}"
             OS='9'
-            sleep 2
 
         else
-            echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
+            echo -e "\\t\\t\\t\\t\\t${white}[${red}NO${white}]${nc}"
             echo
             echo -e "${red}**********************************************************************"
             echo -e "${red}This script will only work on Debian 8 (Jessie) or Debian 9 (Stretch)."
@@ -116,11 +116,12 @@ echo -e -n "${white}Running Debian 8 or 9...${nc}"
 
 # Checking internet connection
 echo -e -n "${white}Connected to the internet...${nc}"
+sleep 1
 wget -q --tries=10 --timeout=20 --spider www.google.com
     if [[ $? -eq 0 ]]; then
-        echo -e "\t\t\t\t\t${white}[${green}YES${white}]${nc}"
+        echo -e "\\t\\t\\t\\t\\t${white}[${green}YES${white}]${nc}"
     else
-        echo -e "\t\t\t\t\t${white}[${red}NO${white}]${nc}"
+        echo -e "\\t\\t\\t\\t\\t${white}[${red}NO${white}]${nc}"
         echo
         echo -e "${red}**********************************************************************"
         echo -e "${red}Internet connection is required, please connect to the internet first."
@@ -139,36 +140,36 @@ sleep 1
 echo
 echo
 echo -e "${yellow}USER INPUT"
-echo -e "${white}The script will gather some information from you.${nc}"
+echo -e "${white}The script will gather some information from you."
 
 # Choose hostname
 echo
-read -p "$(echo -e "${white}Enter server's hostname:               		"${green})" HOSTNAME
+read -r -p "Enter server's hostname:                            " HOSTNAME
 
 # Choose username backup account
 while true
     do
-        read -p "$(echo -e "${white}Enter backup account username:         		"${green})" BACKUPUSER
+        read -r -p "Enter backup account username:                      " BACKUPUSER
             [ "$BACKUPUSER" != "backup" ] && break
             echo
             echo -e "${red}****************************************************"
             echo -e "${red}User 'backup' is a system account and can't be used."
-            echo -e "${red}****************************************************"
+            echo -e "${red}****************************************************${white}"
         echo
     done
 
 # Choose password backup account
 while true
     do
-        read -s -p "$(echo -e "${white}Enter backup account password:         		"${nc})" BACKUPPASS
+        read -r -s -p "Enter backup account password:                      " BACKUPPASS
         echo
-        read -s -p "$(echo -e "${white}Enter backup account Password (again): 		"${nc})" BACKUPPASS2
+        read -r -s -p "Enter backup account Password (again):              " BACKUPPASS2
             [ "$BACKUPPASS" = "$BACKUPPASS2" ] && break
             echo
             echo
             echo -e "${red}*********************************************"
             echo -e "${red}Your passwords don´t match, please try again."
-            echo -e "${red}*********************************************"
+            echo -e "${red}*********************************************${white}"
         echo
     done
 
@@ -176,59 +177,61 @@ while true
 echo
 while true
     do
-        read -p "$(echo -e "${white}Add another user account? (yes/no):    		"${green})" ADDACCOUNT
+        read -r -p "Add another user account? (yes/no):                 " ADDACCOUNT
             [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "no" ] || [ "$ADDACCOUNT" = "y" ] || [ "$ADDACCOUNT" = "n" ] && break
             echo
             echo -e "${red}**************************************************"
             echo -e "${red}Please type yes or no and press enter to continue."
-            echo -e "${red}**************************************************"
+            echo -e "${red}**************************************************${white}"
         echo
     done
 
 ## Choose username user account
 if [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "y" ]; then
-    read -p "$(echo -e "${white}Enter account username:                		"${green})" USER
+    read -r -p "Enter account username:                             " USER
 
 ## Choose password user account
 while true
     do
-        read -s -p "$(echo -e "${white}Enter user account password:           		"${nc})" USERPASS
+        read -r -s -p "Enter user account password:                        " USERPASS
         echo
-        read -s -p "$(echo -e "${white}Enter user account Password (again):   		"${nc})" USERPASS2
+        read -r -s -p "Enter user account Password (again):                " USERPASS2
             [ "$USERPASS" = "$USERPASS2" ] && break
             echo
             echo
             echo -e "${red}*********************************************"
             echo -e "${red}Your passwords don´t match, please try again."
-            echo -e "${red}*********************************************"
+            echo -e "${red}*********************************************${white}"
         echo
     done
 
 ## Add content of AuthorizedKeysFile
     echo
-    read -p "$(echo -e "${white}Enter AuthorizedKeysFile's content:    		"${green})" SSH
+    read -r -p "Enter AuthorizedKeysFile's content:                 " SSH
 fi
 
-echo
-echo -e "${white}****************************************************************************************"
-echo -e "${white}Tip! Add more user accounts later on with add-user.sh in the EasyDebianWebserver folder."
-echo -e "${white}****************************************************************************************"
 
 # Choose MariaDB/MYSQL root password
-echo
 while true
     do
-    read -s -p "$(echo -e "${white}Enter MariaDB/MySQL root password:         	"${nc})" MYSQLPASS
+    read -r -s -p "Enter MariaDB/MySQL root password:                  " MYSQLPASS
         echo
-        read -s -p "$(echo -e "${white}Enter MariaDB/MYSQL root Password (again): 	"${nc})" MYSQLPASS2
+        read -r -s -p "Enter MariaDB/MYSQL root Password (again):          " MYSQLPASS2
             [ "$MYSQLPASS" = "$MYSQLPASS2" ] && break
             echo
             echo
             echo -e "${red}*********************************************"
             echo -e "${red}Your passwords don´t match, please try again."
-            echo -e "${red}*********************************************"
+            echo -e "${red}*********************************************${white}"
         echo
     done
+
+# Tip
+echo
+echo
+echo -e "${white}*******************************************************************************"
+echo -e "${white}Tip! Add more user accounts with add-user.sh in the EasyDebianWebserver folder."
+echo -e "${white}*******************************************************************************"
 
 sleep 1
 
@@ -239,10 +242,9 @@ sleep 1
 
 echo
 echo
-echo -e "${yellow}CHANGING HOSTNAME"
-echo -e -n "${white}Modifying /etc/hostname...${nc}"
+echo -e "${yellow}MODIFYING HOSTNAME"
+echo -e "${white}Modifying /etc/hostname...${nc}"
 echo "$HOSTNAME" > /etc/hostname
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -254,15 +256,13 @@ sleep 1
 echo
 echo
 echo -e "${yellow}REPLACING REPOSITORIES"
-echo -e -n "${white}Modifying sources.list...${nc}"
+echo -e "${white}Modifying sources.list...${nc}"
 
 if [ "$OS" = "8" ]; then
     wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list --no-check-certificate
-    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 elif [ "$OS" = "9" ]; then
     wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list --no-check-certificate
-    echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 fi
 
 sleep 1
@@ -282,7 +282,7 @@ apt update
 
 # Upgrade operating system with new package list
 echo
-echo -e "${white}Downloading and installing new packages...${nc}"
+echo -e "${white}Downloading and installing updated packages...${nc}"
 apt -y upgrade
 
 sleep 1
@@ -341,31 +341,27 @@ echo
 echo
 
 # Hashing the password
-BACKUPHASH=$(openssl passwd -1 -salt temp $BACKUPPASS)
+BACKUPHASH=$(openssl passwd -1 -salt temp "$BACKUPPASS")
 
 # Create the backup user account with chosen password and its own home directory
 echo -e "${yellow}BACKUP USER ACCOUNT"
-echo -e -n "${white}Creating user account...${nc}"
-useradd $BACKUPUSER -s /bin/bash -m -U -p $BACKUPHASH
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Creating user account...${nc}"
+useradd "$BACKUPUSER" -s /bin/bash -m -U -p "$BACKUPHASH"
 
 # Creating folders within the given backup account's home directory
-echo -e -n "${white}Creating backup folders...${nc}"
-mkdir /home/$BACKUPUSER/EasyDebianWebserver
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Creating backup folders...${nc}"
+mkdir /home/"$BACKUPUSER"/EasyDebianWebserver
 
 # Adding handy scripts and readme to EasyDebianWebserver folder
-echo -e -n "${white}Adding handy scripts...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/EasyDebianWebserver.sh -O /home/$BACKUPUSER/EasyDebianWebserver/EasyDebianWebserver.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/add-user.sh -O /home/$BACKUPUSER/EasyDebianWebserver/add-user.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/readme -O /home/$BACKUPUSER/EasyDebianWebserver/README
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Adding handy scripts...${nc}"
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/EasyDebianWebserver.sh -O /home/"$BACKUPUSER"/EasyDebianWebserver/EasyDebianWebserver.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/add-user.sh -O /home/"$BACKUPUSER"/EasyDebianWebserver/add-user.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/readme -O /home/"$BACKUPUSER"/EasyDebianWebserver/README
 
 # Setting folder and file permissions
-echo -e -n "${white}Setting folder and file permissions...${nc}"
-chown -R $BACKUPUSER:root /home/$BACKUPUSER/EasyDebianWebserver
-chmod -R 770 /home/$BACKUPUSER/EasyDebianWebserver
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Setting folder and file permissions...${nc}"
+chown -R "$BACKUPUSER":root /home/"$BACKUPUSER"/EasyDebianWebserver
+chmod -R 770 /home/"$BACKUPUSER"/EasyDebianWebserver
 
 sleep 1
 
@@ -379,41 +375,36 @@ echo
 echo
 
 # Hashing the password
-USERHASH=$(openssl passwd -1 -salt temp $USERPASS)
+USERHASH=$(openssl passwd -1 -salt temp "$USERPASS")
 
 # Create the user account with chosen password and its own home directory
 echo -e "${yellow}USER ACCOUNT"
-echo -e -n "${white}Creating user account...${nc}"
-useradd $USER -s /bin/bash -m -U -p $USERHASH
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Creating user account...${nc}"
+useradd "$USER" -s /bin/bash -m -U -p "$USERHASH"
 
 # Create SSH folder
-echo -e -n "${white}Creating SSH folder...${nc}"
-mkdir /home/$USER/.ssh
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Creating SSH folder...${nc}"
+mkdir /home/"$USER"/.ssh
 
 # Add public key to AuthorizedKeysFile
-echo -e -n "${white}Adding public key...${nc}"
-echo "$SSH" > /home/$USER/.ssh/authorized_keys
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Adding public key...${nc}"
+echo "$SSH" > /home/"$USER"/.ssh/authorized_keys
 
 # Adding user to sudo
-echo -e -n "${white}Adding user account to sudo...${nc}"
-cat << EOF > /etc/sudoers.d/$USER
+echo -e "${white}Adding user account to sudo...${nc}"
+cat << EOF > /etc/sudoers.d/"$USER"
 # User privilege specification
 $USER   ALL=(ALL:ALL) ALL
 EOF
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 # Setting folder and file permissions
-echo -e -n "${white}Setting folder and file permissions...${nc}"
-chown $USER:$USER /home/$USER/.ssh
-chown $USER:$USER /home/$USER/.ssh/authorized_keys
-chown root:root /etc/sudoers.d/$USER
-chmod 700 /home/$USER/.ssh
-chmod 600 /home/$USER/.ssh/authorized_keys
-chmod 440 /etc/sudoers.d/$USER
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Setting folder and file permissions...${nc}"
+chown "$USER":"$USER" /home/"$USER"/.ssh
+chown "$USER":"$USER" /home/"$USER"/.ssh/authorized_keys
+chown root:root /etc/sudoers.d/"$USER"
+chmod 700 /home/"$USER"/.ssh
+chmod 600 /home/"$USER"/.ssh/authorized_keys
+chmod 440 /etc/sudoers.d/"$USER"
 
 fi
 
@@ -438,18 +429,17 @@ echo -e "${white}Configuring firewall for ssh, http and https traffic...${grey}"
 ufw limit ssh
 ufw allow http
 ufw allow https
-echo
 
 # Make logging more usefull on UFW
+echo
 echo -e "${white}Activating logging...${grey}"
 ufw logging on
 
 # UFW isn't activated by default, this activates it
 echo
-echo -e -n "${white}Activating firewall on next boot...${green}"
+echo -e "${white}Activating firewall on next boot...${green}"
 sed -i.bak 's/ENABLED=no/ENABLED=yes/g' /etc/ufw/ufw.conf
 chmod 0644 /etc/ufw/ufw.conf
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -461,9 +451,8 @@ sleep 1
 echo
 echo
 echo -e "${yellow}CONFIGURING UNATTENDED-UPGRADES"
-echo -e -n "${white}Activating unattended-upgrades...${nc}"
-echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";\n" > /etc/apt/apt.conf.d/20auto-upgrades
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Activating unattended-upgrades...${nc}"
+echo -e "APT::Periodic::Update-Package-Lists \"1\";\\nAPT::Periodic::Unattended-Upgrade \"1\";\\n" > /etc/apt/apt.conf.d/20auto-upgrades
 
 sleep 1
 
@@ -484,9 +473,8 @@ a2enmod ssl
 echo
 
 # Restart webserver so changes can take effect
-echo -e -n "${white}Restarting webserver...${grey}"
+echo -e "${white}Restarting webserver...${grey}"
 service apache2 restart
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -500,25 +488,20 @@ echo
 echo -e "${yellow}CONFIGURING MYSQL"
 
 # Harden MariaDB/MYSQL installation
-echo -e -n "${white}Adding password...${grey}"
+echo -e "${white}Adding password...${grey}"
 mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('$MYSQLPASS') WHERE User='root'"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-echo -e -n "${white}Disallow remote root login...${grey}"
+echo -e "${white}Disallow remote root login...${grey}"
 mysql -u root -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-echo -e -n "${white}Remove anonymous users...${grey}"
+echo -e "${white}Remove anonymous users...${grey}"
 mysql -u root -e "DELETE FROM mysql.user WHERE User=''"
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
-echo -e -n "${white}Remove test database and access to it...${grey}"
+echo -e "${white}Remove test database and access to it...${grey}"
 mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
-echo -e "\t\t\t${white}[${green}DONE${white}]${nc}"
 
-echo -e -n "${white}Flushing privileges...${grey}"
+echo -e "${white}Flushing privileges...${grey}"
 mysql -u root -e "FLUSH PRIVILEGES"
-echo -e "\t\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -532,30 +515,26 @@ echo
 echo -e "${yellow}CONFIGURING AUTOMATIC BACKUP"
 
 # Creating backup folders within the given backup account's home directory
-echo -e -n "${white}Creating backup folders...${nc}"
-mkdir -p /home/$BACKUPUSER/backup/files /home/$BACKUPUSER/backup/databases
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Creating backup folders...${nc}"
+mkdir -p /home/"$BACKUPUSER"/backup/files /home/"$BACKUPUSER"/backup/databases
 
 # Adding backupscripts to folders
-echo -e -n "${white}Creating backup script...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-daily.sh -O /home/$BACKUPUSER/backup/backup-daily.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-weekly.sh -O /home/$BACKUPUSER/backup/backup-weekly.sh
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Creating backup script...${nc}"
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-daily.sh -O /home/"$BACKUPUSER"/backup/backup-daily.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-weekly.sh -O /home/"$BACKUPUSER"/backup/backup-weekly.sh
 
 # Replacing '$BACKUPUSER' in script with $BACKUPUSER variable value
-echo -e -n "${white}Customizing backup script...${nc}"
-sed -i s/'$BACKUPUSER'/$BACKUPUSER/g /home/$BACKUPUSER/backup/backup-daily.sh
-sed -i s/'$BACKUPUSER'/$BACKUPUSER/g /home/$BACKUPUSER/backup/backup-weekly.sh
-echo -e "\t\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Customizing backup script...${nc}"
+sed -i s/'$BACKUPUSER'/"$BACKUPUSER"/g /home/"$BACKUPUSER"/backup/backup-daily.sh
+sed -i s/'$BACKUPUSER'/"$BACKUPUSER"/g /home/"$BACKUPUSER"/backup/backup-weekly.sh
 
 # Setting folder and file permissions
-echo -e -n "${white}Setting folder and file permissions...${nc}"
-chown -R $BACKUPUSER:root /home/$BACKUPUSER/backup
-chmod -R 770 /home/$BACKUPUSER/backup
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
+echo -e "${white}Setting folder and file permissions...${nc}"
+chown -R "$BACKUPUSER":root /home/"$BACKUPUSER"/backup
+chmod -R 770 /home/"$BACKUPUSER"/backup
 
 # Add cronjobs for backup scripts
-echo -e -n "${white}Adding cronjob for backup script...${nc}"
+echo -e "${white}Adding cronjob for backup script...${nc}"
 cat << EOF > /etc/cron.d/automated-backup
 # This cronjob activates the backup_daily.sh script every day at 4:00.
 0 4 * * 1-6 /home/$BACKUPUSER/backup/backup-daily.sh
@@ -563,7 +542,6 @@ cat << EOF > /etc/cron.d/automated-backup
 # This cronjob activates the backup-weekly.sh script every week on sunday at 4:00.
 0 4 * * 0 /home/$BACKUPUSER/backup/backup-weekly.sh
 EOF
-echo -e "\t\t\t\t${white}[${green}DONE${white}]${nc}"
 
 sleep 1
 
@@ -597,8 +575,7 @@ echo -e "${white}
             Weekly and daily backup scripts:     /home/$BACKUPUSER/backup
             The archived file backups:           /home/$BACKUPUSER/backup/files
             The archived database backups:       /home/$BACKUPUSER/backup/databases
-            Sources.list                         /etc/apt/sources.list
-            File with cronjobs:                  /etc/cron.d/automated-backup
+            File with backup cronjobs:           /etc/cron.d/automated-backup
             Sudo file from optional account:     /etc/sudoers.d/$USER
 
     3.	${yellow}FIREWALL${white}
@@ -622,11 +599,11 @@ echo -e "${white}
 
             'shutdown -r now' or 'reboot'.
 
-    I hope you are happy with your new webserver and that it serves you (and others ;) well. If you 
+    I hope you are happy with your new webserver and that it serves you (and others ;) well. If you
     have any questions you can post them on https://github.com/sveeke/EasyDebianWebserver/issues.
 
-Good luck!
-
+******************************************************************************************************
+                                            ${yellow}GOOD LUCK!${white}
 ******************************************************************************************************"
 echo
 echo
