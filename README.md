@@ -25,15 +25,23 @@ Please note that some software is optional, these preferences can be changed in 
 * PHP + some extentions (optional)
 * MariaDB (optional)
 * Let's Encrypt's Certbot for certificates
-* The Uncomplicated Firewall (UFW)
+* Uncomplicated Firewall (UFW)
 * Some commonly used software like apt-transport-https, unattended-upgrades, (un)zip, dnsutils, curl etc.
+
+## Requirements
+* A clean installation of Debian 8 Jessie or Debian 9 Stretch.
+* You must be able to run the script as root.
+* The system you are installing this on must have a functioning internet connection and DNS.
+* Some free disk space for the packages.
+
+That's all :-).
 
 ## How to run the script?
 *Note: connecting with SSH makes pasting things like the SSH public key a lot easier.*
 
 1. Become root if you are not already.  
    ```su root```
-2. Change directory to a folder to you liking.  
+2. Change directory to a folder to your liking.  
    ```cd /tmp```
 3. Download the file with git, direct link (example below) or copy the content from github and paste in nano/vim.  
    ```wget https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/EasyDebianWebserver.sh```
