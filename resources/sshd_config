@@ -1,7 +1,7 @@
 
 #############################################################################
 # This file is part of https://github.com/sveeke/EasyDebianWebserver
-# Version 1.0.0-alpha.1
+# Version 1.0.0-BETA.1
 #############################################################################
 
 #############################################################################
@@ -13,6 +13,10 @@
 # The port and protocol sshd wil listen to.
 Port 22
 Protocol 2
+
+# Edit below to restrict wo which interfaces/protocols sshd will bind to.
+ListenAddress ::
+ListenAddress 0.0.0.0
 
 # HostKeys for protocol version 2.
 HostKey /etc/ssh/ssh_host_rsa_key
@@ -33,12 +37,17 @@ ServerKeyBits 1024
 
 # Logging
 SyslogFacility AUTH
-LogLevel INFO
+LogLevel VERBOSE
 
 # Authentication
 LoginGraceTime 60
-PermitRootLogin no
 StrictModes yes
+MaxAuthTries 3
+MaxSessions 3
+
+PermitRootLogin no
+PasswordAuthentication no
+PermitEmptyPasswords no
 
 RSAAuthentication yes
 PubkeyAuthentication yes
@@ -53,15 +62,9 @@ HostbasedAuthentication no
 # Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
 #IgnoreUserKnownHosts yes
 
-# To enable empty passwords, change to yes (NOT RECOMMENDED)
-PermitEmptyPasswords no
-
 # Change to yes to enable challenge-response passwords (beware issues with
 # some PAM modules and threads)
 ChallengeResponseAuthentication no
-
-# Change to no to disable tunnelled clear text passwords
-PasswordAuthentication no
 
 # Kerberos options
 #KerberosAuthentication no
@@ -73,11 +76,12 @@ PasswordAuthentication no
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
-X11Forwarding yes
+X11Forwarding no
 X11DisplayOffset 10
 PrintMotd no
 PrintLastLog yes
 TCPKeepAlive yes
+AllowTcpForwarding no
 #UseLogin no
 
 #MaxStartups 10:30:60
