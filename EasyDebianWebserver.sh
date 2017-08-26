@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-RELEASE (26-08-2017)
+# Version 1.1.1-RELEASE (27-08-2017)
 #############################################################################
 
 #############################################################################
@@ -461,7 +461,7 @@ if [ "$HARDEN_SSH" = "yes" ]; then
     wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/sshd_config -O /etc/ssh/sshd_config
 
 # Adding ed25519 host key to Debian 8 ssh folder
-elif [ "$OS" = "8"]; then
+elif [ "$OS" = "8" ]; then
     echo -e "${white}Adding ed25519 host key to ssh folder...${nc}"
     ssh-keygen -q -f /etc/ssh/ssh_host_ed25519_key -N "" -t ed25519
 fi
