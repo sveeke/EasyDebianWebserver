@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-BETA.2 (22-07-2017)
+# Version 1.1.0-BETA.3 (26-08-2017)
 #############################################################################
 
 #############################################################################
@@ -11,16 +11,30 @@
 #############################################################################
 
 #############################################################################
-# VARIABLES
+# USER VARIABLES
 #############################################################################
 
+# Harden SSH configuration (/etc/ssh/sshd_config)
+# Please note that this can lock you out when no functioning public key 
+# has been provided during user creation. Answer can either be yes or no.
+HARDEN_SSH='yes'
+
+# Install MySQL and PHP? Answer can either be yes or now.
+INSTALL_MYSQL='yes'
+INSTALL_PHP='yes'
+
+
+#############################################################################
 # COLOURS AND MARKUP
+#############################################################################
+
 red='\033[0;31m'            # Red
 green='\033[0;49;92m'       # Green
 yellow='\033[0;49;93m'      # Yellow
 white='\033[1;37m'          # White
 grey='\033[1;49;30m'        # Grey
 nc='\033[0m'                # No color
+
 
 #############################################################################
 # SYSTEM
@@ -30,6 +44,7 @@ nc='\033[0m'                # No color
 #set -e # stop the script on errors
 #set -u # unset variables are an error
 #set -o pipefail # piping a failed process into a successful one is an arror
+
 
 #############################################################################
 # LICENSE AND INTRODUCTION
@@ -134,7 +149,7 @@ sleep 1
 
 
 #############################################################################
-# USER CONFIGURATION
+# USER INPUT AND CONFIGURATION
 #############################################################################
 
 echo
@@ -173,11 +188,11 @@ while true
         echo
     done
 
-# Check whether the user wants to create another account
+# Check whether the user wants to create a user account
 echo
 while true
     do
-        read -r -p "Add another user account? (yes/no):                 " ADDACCOUNT
+        read -r -p "Add a user account? (yes/no):                       " ADDACCOUNT
             [ "$ADDACCOUNT" = "yes" ] || [ "$ADDACCOUNT" = "no" ] || [ "$ADDACCOUNT" = "y" ] || [ "$ADDACCOUNT" = "n" ] && break
             echo
             echo -e "${red}**************************************************"
@@ -306,28 +321,46 @@ echo -e "${white}The following software will be installed:
 - unzip                          For extracting zip archives
 - sysstat                        Some handy system performance tools
 - curl                           Transfer data in different ways
+- dnsutils                       Frequently used DNS utilities
+- apache2                        The Apache webserver
+- certbot                        The official Let's Encrypt client
+
+Optional:
 - mariadb-server                 The MySQL based database server
 - mariadb-client                 The MySQL based database client 
-- apache2                        The Apache webserver
 - php                            Popular hypertext preprocessor for dynamic content
-- Some php extentions            Some widely used PHP extention
+- some php extentions            Some widely used PHP extention
 - libapache2-mod-php             Integrate php in the apache webserver
-- python-certbot-apache          The official Let's Encrypt client
 
-Starting in 10 seconds...${nc}"
 
-sleep 10
+Starting in 5 seconds...${nc}"
+
+sleep 5
 echo
-echo
+
+# Checking choices for install
+if [ "$INSTALL_MYSQL" = "yes" ]; then
+    MYSQL='mariadb-server mariadb-client'
+else
+    MYSQL=''
+fi
+
+if [ "$INSTALL_PHP" = "yes" ]; then
+    PHP5='php5 php5-mysql php5-gd php5-curl libapache2-mod-php5'
+    PHP7='php7.0 php7.0-mysql php7.0-gd php7.0-curl libapache2-mod-php7.0'
+else
+    PHP5=''
+    PHP7=''
+fi
 
 # Install packages for Debian 8 Jessie
 if [ "$OS" = "8" ]; then
-    apt-get -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php5 php5-mysql php5-gd php5-curl libapache2-mod-php5
-    apt-get -y install python-certbot-apache -t jessie-backports
+    apt -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl dnsutils apache2 $MYSQL $PHP5
+    apt -y install python-certbot-apache -t jessie-backports
 
 # Install packages for Debian 9 Stretch
 elif [ "$OS" = "9" ]; then
-    apt-get -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl mariadb-server mariadb-client apache2 php7.0 php7.0-mysql php7.0-gd php7.0-curl libapache2-mod-php7.0 python-certbot-apache
+    apt -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl apache2 python-certbot-apache dnsutils $MYSQL $PHP7
 fi
 
 sleep 1
@@ -412,6 +445,31 @@ sleep 1
 
 
 #############################################################################
+# OPTIONAL: HARDEN SSH
+#############################################################################
+
+if [ "$HARDEN_SSH" = "yes" ]; then
+    echo
+    echo
+    echo -e "${yellow}HARDENING SSH"
+    echo -e "${green}***************************************************************************"
+    echo -e "${green}Please make sure your public key is added properly before rebooting Debian."
+    echo -e "${green}***************************************************************************${white}"
+    sleep 3
+    echo
+    echo -e "${white}Replacing sshd_config...${nc}"
+    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/sshd_config -O /etc/ssh/sshd_config
+
+# Adding ed25519 host key to Debian 8 ssh folder
+elif [ "$OS" = "8"]; then
+    echo -e "${white}Adding ed25519 host key to ssh folder...${nc}"
+    ssh-keygen -q -f /etc/ssh/ssh_host_ed25519_key -N "" -t ed25519
+fi
+
+sleep 1
+
+
+#############################################################################
 # CONFIGURE FIREWALL
 #############################################################################
 
@@ -465,16 +523,25 @@ echo
 echo
 echo -e "${yellow}CONFIGURING WEBSERVER"
 
-# Activate relevant apache2 modules
-echo -e "${white}Activating apache2 modules...${grey}"
+# Adding hardenend configurations for http security headers and SSL
+echo -e "${white}Adding hardened configuration for http security headers...${grey}"
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/security.conf -O /etc/apache2/conf-available/security.conf
+
+echo -e "${white}Adding hardenend configuration for TLS/SSL/Let's Encrypt...${grey}"
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/options-ssl-apache.conf -O /etc/letsencrypt/options-ssl-apache.conf
+
+# Activate relevant apache2 modules and configurations
+echo -e "${white}Activating apache2 modules and configurations...${grey}"
 a2enmod rewrite
 a2enmod actions
 a2enmod ssl
+a2enmod headers
+a2enconf security.conf
 echo
 
 # Restart webserver so changes can take effect
 echo -e "${white}Restarting webserver...${grey}"
-service apache2 restart
+systemctl restart apache2
 
 sleep 1
 
@@ -483,25 +550,28 @@ sleep 1
 # CONFIGURE MYSQL
 #############################################################################
 
-echo
-echo
-echo -e "${yellow}CONFIGURING MYSQL"
+if [ "$OS" = "9" ]; then
+    echo
+    echo
+    echo -e "${yellow}CONFIGURING MYSQL"
 
-# Harden MariaDB/MYSQL installation
-echo -e "${white}Adding password...${grey}"
-mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('$MYSQLPASS') WHERE User='root'"
+    # Harden MariaDB/MYSQL installation
+    echo -e "${white}Adding password...${grey}"
+    mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('$MYSQLPASS') WHERE User='root'"
 
-echo -e "${white}Disallow remote root login...${grey}"
-mysql -u root -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
+    echo -e "${white}Disallow remote root login...${grey}"
+    mysql -u root -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
 
-echo -e "${white}Remove anonymous users...${grey}"
-mysql -u root -e "DELETE FROM mysql.user WHERE User=''"
+    echo -e "${white}Remove anonymous users...${grey}"
+    mysql -u root -e "DELETE FROM mysql.user WHERE User=''"
 
-echo -e "${white}Remove test database and access to it...${grey}"
-mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
+    echo -e "${white}Remove test database and access to it...${grey}"
+    mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
 
-echo -e "${white}Flushing privileges...${grey}"
-mysql -u root -e "FLUSH PRIVILEGES"
+    echo -e "${white}Flushing privileges...${grey}"
+    mysql -u root -e "FLUSH PRIVILEGES"
+
+fi
 
 sleep 1
 
@@ -537,10 +607,10 @@ chmod -R 770 /home/"$BACKUPUSER"/backup
 echo -e "${white}Adding cronjob for backup script...${nc}"
 cat << EOF > /etc/cron.d/automated-backup
 # This cronjob activates the backup_daily.sh script every day at 4:00.
-0 4 * * 1-6 /home/$BACKUPUSER/backup/backup-daily.sh
+0 4 * * 1-6 root /home/$BACKUPUSER/backup/backup-daily.sh
 
 # This cronjob activates the backup-weekly.sh script every week on sunday at 4:00.
-0 4 * * 0 /home/$BACKUPUSER/backup/backup-weekly.sh
+0 4 * * 0 root /home/$BACKUPUSER/backup/backup-weekly.sh
 EOF
 
 sleep 1
