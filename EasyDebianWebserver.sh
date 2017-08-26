@@ -54,7 +54,7 @@ clear
 echo
 echo -e "${yellow}
 #############################################################################
-# Copyright 2016 Sebas Veeke                                                #
+# Copyright 2016-2017 Sebas Veeke                                           #
 #                                                                           #
 # This file is part of EasyDebianWebserver                                  #
 #                                                                           #
@@ -465,6 +465,8 @@ elif [ "$OS" = "8"]; then
     echo -e "${white}Adding ed25519 host key to ssh folder...${nc}"
     ssh-keygen -q -f /etc/ssh/ssh_host_ed25519_key -N "" -t ed25519
 fi
+
+systemctl restart sshd
 
 sleep 1
 

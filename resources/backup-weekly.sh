@@ -1,11 +1,11 @@
 #!/bin/bash 
 
 #############################################################################
-# Version 1.1.0-alpha.2 (24-12-2016)
+# Version 1.1.0-RELEASE (26-08-2017)
 #############################################################################
 
 #############################################################################
-# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
+# Copyright 2016-2017 Sebas Veeke. Released under the AGPLv3 license
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
 # Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
 #############################################################################
@@ -31,13 +31,13 @@ BACKUP_PATH_SQL='/home/$BACKUPUSER/backup/databases'
 # To add more folders, place the folder path you want to add between the
 # quotation marks below. Make sure the folders are seperated with a space.
 # If you also want to include hidden files, add '/.' to the location.
-BACKUP_FOLDERS='/var/www/html/. /etc/apache2 /etc/ssl /etc/php5'
+BACKUP_FOLDERS='/var/www/html/. /etc/apache2 /etc/ssl /etc/php*'
 
 # This is the default folder where MySQL databases are stored.
 BACKUP_SQL='/var/lib/mysql/.'
 
 # Backup retention in number of days.
-RETENTION='180'
+RETENTION='90'
 
 #############################################################################
 # SET DEFAULT FILE PERMISSIONS
@@ -58,14 +58,14 @@ tar -cpzf $BACKUP_PATH_FILES/backup-weekly-files-$( date '+%Y-%m-%d-%H-%M-%S' ).
 # In order to minimize the risk of getting inconsistencies because of pending 
 # transactions, apache2 and MySQL will be stopped temporary.
 
-service apache2 stop
+systemctl stop apache2
 sleep 10
-service mysql stop
+systemctl stop mysql
 sleep 5
 tar -cpzf $BACKUP_PATH_SQL/backup-weekly-sql-$( date '+%Y-%m-%d-%H-%M-%S' ).tar.gz $BACKUP_SQL
-service mysql start
+systemctl start mysql
 sleep 5
-service apache2 start
+systemctl start apache2
 
 #############################################################################
 # SET BACKUP OWNERSHIP
@@ -86,4 +86,3 @@ find $BACKUP_PATH_SQL/backup-weekly* -mtime +$RETENTION -type f -delete
 # To restore earlier created backups, use the command below:
 # tar -xpzf /path/to/backup.tar.gz -C /path/to/place/backup
 #############################################################################
-

@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.0.0-alpha.1 (25-12-2016)
+# Version 1.0.0-RELEASE (26-08-2017)
 #############################################################################
 
 #############################################################################
-# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license
+# Copyright 2016-2017 Sebas Veeke. Released under the AGPLv3 license
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt
 # Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver
 #############################################################################
@@ -40,7 +40,7 @@ clear
 echo
 echo -e "${yellow}
 #############################################################################
-# Copyright 2016 Sebas Veeke. Released under the AGPLv3 license             #
+# Copyright 2016-2017 Sebas Veeke. Released under the AGPLv3 license             #
 # See https://github.com/sveeke/EasyDebianWebserver/blob/master/license.txt #
 # Source code on GitHub: https://github.com/sveeke/EasyDebianWebserver      #
 #############################################################################${nc}"
