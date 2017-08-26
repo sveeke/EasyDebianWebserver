@@ -1,0 +1,12 @@
+# Standard repositories
+deb http://deb.debian.org/debian jessie main
+deb-src http://deb.debian.org/debian jessie main
+deb http://deb.debian.org/debian jessie-updates main
+deb-src http://deb.debian.org/debian jessie-updates main
+
+# Security repositories
+deb http://security.debian.org/ jessie/updates main
+deb-src http://security.debian.org/ jessie/updates main
+
+# Backport repositories
+deb http://ftp.debian.org/debian jessie-backports main
