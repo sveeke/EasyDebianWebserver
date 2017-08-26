@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.0-BETA.3 (26-08-2017)
+# Version 1.1.0-RELEASE (26-08-2017)
 #############################################################################
 
 #############################################################################
@@ -274,10 +274,10 @@ echo -e "${yellow}REPLACING REPOSITORIES"
 echo -e "${white}Modifying sources.list...${nc}"
 
 if [ "$OS" = "8" ]; then
-    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian8-sources.list -O /etc/apt/sources.list --no-check-certificate
+    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/debian8-sources.list -O /etc/apt/sources.list --no-check-certificate
 
 elif [ "$OS" = "9" ]; then
-    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/debian9-sources.list -O /etc/apt/sources.list --no-check-certificate
+    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/debian9-sources.list -O /etc/apt/sources.list --no-check-certificate
 fi
 
 sleep 1
@@ -387,9 +387,9 @@ mkdir /home/"$BACKUPUSER"/EasyDebianWebserver
 
 # Adding handy scripts and readme to EasyDebianWebserver folder
 echo -e "${white}Adding handy scripts...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/EasyDebianWebserver.sh -O /home/"$BACKUPUSER"/EasyDebianWebserver/EasyDebianWebserver.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/add-user.sh -O /home/"$BACKUPUSER"/EasyDebianWebserver/add-user.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/readme -O /home/"$BACKUPUSER"/EasyDebianWebserver/README
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/EasyDebianWebserver.sh -O /home/"$BACKUPUSER"/EasyDebianWebserver/EasyDebianWebserver.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/add-user.sh -O /home/"$BACKUPUSER"/EasyDebianWebserver/add-user.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/readme -O /home/"$BACKUPUSER"/EasyDebianWebserver/README
 
 # Setting folder and file permissions
 echo -e "${white}Setting folder and file permissions...${nc}"
@@ -458,7 +458,7 @@ if [ "$HARDEN_SSH" = "yes" ]; then
     sleep 3
     echo
     echo -e "${white}Replacing sshd_config...${nc}"
-    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/sshd_config -O /etc/ssh/sshd_config
+    wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/sshd_config -O /etc/ssh/sshd_config
 
 # Adding ed25519 host key to Debian 8 ssh folder
 elif [ "$OS" = "8"]; then
@@ -525,10 +525,10 @@ echo -e "${yellow}CONFIGURING WEBSERVER"
 
 # Adding hardenend configurations for http security headers and SSL
 echo -e "${white}Adding hardened configuration for http security headers...${grey}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/security.conf -O /etc/apache2/conf-available/security.conf
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/security.conf -O /etc/apache2/conf-available/security.conf
 
 echo -e "${white}Adding hardenend configuration for TLS/SSL/Let's Encrypt...${grey}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/options-ssl-apache.conf -O /etc/letsencrypt/options-ssl-apache.conf
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/options-ssl-apache.conf -O /etc/letsencrypt/options-ssl-apache.conf
 
 # Activate relevant apache2 modules and configurations
 echo -e "${white}Activating apache2 modules and configurations...${grey}"
@@ -590,8 +590,8 @@ mkdir -p /home/"$BACKUPUSER"/backup/files /home/"$BACKUPUSER"/backup/databases
 
 # Adding backupscripts to folders
 echo -e "${white}Creating backup script...${nc}"
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-daily.sh -O /home/"$BACKUPUSER"/backup/backup-daily.sh
-wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/Release-1.1/resources/backup-weekly.sh -O /home/"$BACKUPUSER"/backup/backup-weekly.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/backup-daily.sh -O /home/"$BACKUPUSER"/backup/backup-daily.sh
+wget -q https://raw.githubusercontent.com/sveeke/EasyDebianWebserver/master/resources/backup-weekly.sh -O /home/"$BACKUPUSER"/backup/backup-weekly.sh
 
 # Replacing '$BACKUPUSER' in script with $BACKUPUSER variable value
 echo -e "${white}Customizing backup script...${nc}"
