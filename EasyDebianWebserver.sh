@@ -17,7 +17,7 @@
 # Harden SSH configuration (/etc/ssh/sshd_config)
 # Please note that this can lock you out when no functioning public key 
 # has been provided during user creation. Answer can either be yes or no.
-HARDEN_SSH='yes'
+HARDEN_SSH='no'
 
 # Install MySQL and PHP? Answer can either be yes or now.
 INSTALL_MYSQL='yes'
