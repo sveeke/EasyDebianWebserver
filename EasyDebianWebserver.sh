@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.1-RELEASE (27-08-2017)
+# Version 1.1.2-RELEASE (7-9-2017)
 #############################################################################
 
 #############################################################################
@@ -355,12 +355,12 @@ fi
 
 # Install packages for Debian 8 Jessie
 if [ "$OS" = "8" ]; then
-    apt -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl dnsutils apache2 $MYSQL $PHP5
+    apt -y install apt-transport-https ca-certificates unattended-upgrades ntp ufw sudo zip unzip sysstat curl dnsutils inetutils-traceroute apache2 $MYSQL $PHP5
     apt -y install python-certbot-apache -t jessie-backports
 
 # Install packages for Debian 9 Stretch
 elif [ "$OS" = "9" ]; then
-    apt -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl apache2 python-certbot-apache dnsutils $MYSQL $PHP7
+    apt -y install apt-transport-https unattended-upgrades ntp ufw sudo zip unzip sysstat curl apache2 python-certbot-apache dnsutils inetutils-traceroute $MYSQL $PHP7
 fi
 
 sleep 1
