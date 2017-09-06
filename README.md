@@ -12,7 +12,7 @@ Quite a lot actually! The most important things:
 * Installs basic software needed for a complete webserver.
 * Creates a user account with correctly set ssh, sudo and folder permissions.
 * Creates a backup account with automated daily backups to its home folder.
-* Installes and configures a basic firewall.
+* Installs and configures a basic firewall.
 * Hardens the webserver, SSH, SSL/TLS and MySQL.
 * Configures automatic security updates.
 
