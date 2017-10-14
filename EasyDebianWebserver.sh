@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 1.1.2-RELEASE (7-9-2017)
+# Version 1.1.3-RELEASE (14-10-2017)
 #############################################################################
 
 #############################################################################
@@ -374,7 +374,7 @@ echo
 echo
 
 # Hashing the password
-BACKUPHASH=$(openssl passwd -1 -salt temp "$BACKUPPASS")
+BACKUPHASH=$(openssl passwd -1 -salt $(openssl rand -base64 6) "$BACKUPPASS")
 
 # Create the backup user account with chosen password and its own home directory
 echo -e "${yellow}BACKUP USER ACCOUNT"
@@ -408,7 +408,7 @@ echo
 echo
 
 # Hashing the password
-USERHASH=$(openssl passwd -1 -salt temp "$USERPASS")
+USERHASH=$(openssl passwd -1 -salt $(openssl rand -base64 6) "$USERPASS")
 
 # Create the user account with chosen password and its own home directory
 echo -e "${yellow}USER ACCOUNT"
