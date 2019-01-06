@@ -1,3 +1,5 @@
+Note: this project has moved to https://github.com/onnozel/easywebserver. The version in this repository isn't maintained anymore.
+
 # Easy Debian Webserver
 You want a reasonably secure webserver based on Debian? Well, you are in luck! This shell script does exactly that.
 
